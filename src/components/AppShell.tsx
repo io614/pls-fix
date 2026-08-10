@@ -22,6 +22,58 @@ const ALIGN_ICONS: { key: string; label: string }[] = [
   { key: 'bottom', label: 'Align Bottom' },
 ]
 
+/*
+ * Quick-access toolbar glyphs. Line icons rather than CSS shapes — at 16px the
+ * stroke weight is what makes them read as an Office toolbar instead of blobs.
+ */
+const strokeProps = {
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeLinecap: 'round',
+  strokeLinejoin: 'round',
+} as const
+
+function SaveIcon() {
+  return (
+    <svg className="qat-glyph" viewBox="0 0 16 16" {...strokeProps} strokeWidth={1.2}>
+      <path d="M2.5 2.5h8.2l2.8 2.8v8.2a.5.5 0 0 1-.5.5h-10.5a.5.5 0 0 1-.5-.5v-10.5a.5.5 0 0 1 .5-.5z" />
+      <path d="M5 2.5h5v4h-5z" />
+      <path d="M4 9.5h8v4.5h-8z" />
+    </svg>
+  )
+}
+
+function UndoIcon() {
+  return (
+    <svg className="qat-glyph" viewBox="0 0 16 16" {...strokeProps} strokeWidth={1.4}>
+      <path d="M5.5 4 2 7.5 5.5 11" />
+      <path d="M2 7.5h6.5a3.75 3.75 0 0 1 0 7.5H6.5" />
+    </svg>
+  )
+}
+
+function RedoIcon() {
+  return (
+    <svg
+      className="qat-glyph qat-glyph--flip"
+      viewBox="0 0 16 16"
+      {...strokeProps}
+      strokeWidth={1.4}
+    >
+      <path d="M2.6 9.6A5.2 5.2 0 1 1 8 14.2" />
+      <path d="M.9 7.2 2.7 10.1 5.6 8.4" />
+    </svg>
+  )
+}
+
+function Caret() {
+  return (
+    <svg className="qat-caret" viewBox="0 0 8 8" {...strokeProps} strokeWidth={1}>
+      <path d="M1.5 3 4 5.5 6.5 3" />
+    </svg>
+  )
+}
+
 export default function AppShell({
   filename,
   saveState,
@@ -42,11 +94,31 @@ export default function AppShell({
             <span />
           </span>
           <span className="app-name">pls fix</span>
-          <span className="qat" aria-hidden="true">
-            <span className="qat-btn qat-btn--save" />
-            <span className="qat-btn qat-btn--undo" />
-            <span className="qat-btn qat-btn--redo" />
+
+          <span className="autosave" aria-hidden="true">
+            <span className="autosave-label">AutoSave</span>
+            <span className="autosave-switch">
+              <span className="autosave-knob" />
+            </span>
+            <span className="autosave-state">On</span>
           </span>
+
+          <span className="qat" aria-hidden="true">
+            <span className="qat-btn" title="Save">
+              <SaveIcon />
+            </span>
+            <span className="qat-btn qat-btn--split" title="Undo">
+              <UndoIcon />
+              <Caret />
+            </span>
+            <span className="qat-btn" title="Redo">
+              <RedoIcon />
+            </span>
+            <span className="qat-btn qat-btn--overflow" title="Customize Quick Access Toolbar">
+              <Caret />
+            </span>
+          </span>
+
           <span className="app-divider" aria-hidden="true" />
           <span className="app-file" title={filename}>
             {filename}
@@ -87,7 +159,7 @@ export default function AppShell({
             </span>
           ))}
           <span className="ribbon-spacer" />
-          <span className="ribbon-note">Autosave on</span>
+          <span className="ribbon-note">Comments</span>
         </nav>
 
         <div className="ribbon-pane" aria-hidden="true">
