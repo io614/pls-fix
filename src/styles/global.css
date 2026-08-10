@@ -473,6 +473,55 @@ button {
   color: var(--ink-2);
 }
 
+/*
+ * Office's large ribbon command: glyph stacked over its label. Fixed width so
+ * swapping "Escalate" for "Escalated." leaves the ribbon where it was.
+ */
+.ribbon-cmd {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 4px;
+  width: 68px;
+  padding: 5px 2px;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  background: transparent;
+  font-size: 10.5px;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast);
+}
+
+.ribbon-cmd:hover:not(:disabled) {
+  background: var(--office-bg-hover);
+  border-color: var(--office-line);
+}
+
+.ribbon-cmd:active:not(:disabled) {
+  background: var(--office-bg-pressed);
+}
+
+.ribbon-cmd:disabled {
+  color: var(--ink-4);
+  cursor: default;
+}
+
+.ribbon-cmd:disabled .ribbon-flag {
+  opacity: 0.3;
+}
+
+.ribbon-cmd-label {
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.ribbon-flag {
+  width: 18px;
+  height: 18px;
+  color: var(--ink-2);
+}
+
 /* Icons are drawn with CSS rather than an icon font, matching the app's
    existing hand-drawn app-mark/kbd glyphs. */
 .ribbon-icon {
@@ -1476,6 +1525,16 @@ button {
   background: transparent;
   border-color: transparent;
   cursor: default;
+}
+
+/*
+ * Escalating lives in the ribbon. The status bar only carries it on narrow
+ * viewports, where the ribbon's command pane is hidden.
+ */
+@media (min-width: 861px) {
+  .status-hint {
+    display: none;
+  }
 }
 
 .target-ghost {

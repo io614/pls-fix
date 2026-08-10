@@ -9,6 +9,9 @@ interface Props {
   debug: boolean
   onToggleMute: () => void
   onPause: () => void
+  onEscalate: () => void
+  escalateLabel: string
+  escalateDisabled: boolean
   children: ReactNode
 }
 
@@ -75,6 +78,16 @@ function Caret() {
   )
 }
 
+/** The one ribbon command that does something. Flagged, in the Outlook sense. */
+function FlagIcon() {
+  return (
+    <svg className="ribbon-flag" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+      <path d="M3.4 14.4V2.2" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
+      <path d="M4.6 2.6h7.6l-1.7 2.9 1.7 2.9H4.6z" fill="var(--red)" />
+    </svg>
+  )
+}
+
 export default function AppShell({
   filename,
   saveState,
@@ -83,6 +96,9 @@ export default function AppShell({
   debug,
   onToggleMute,
   onPause,
+  onEscalate,
+  escalateLabel,
+  escalateDisabled,
   children,
 }: Props) {
   return (
@@ -159,8 +175,9 @@ export default function AppShell({
           <span className="ribbon-note">Comments</span>
         </nav>
 
-        <div className="ribbon-pane" aria-hidden="true">
-          <div className="ribbon-group">
+        {/* The pane is scenery except for Review, which is the real control. */}
+        <div className="ribbon-pane">
+          <div className="ribbon-group" aria-hidden="true">
             <div className="ribbon-group-grid">
               {ALIGN_ICONS.map((icon) => (
                 <span key={icon.key} className="ribbon-icon-btn" title={icon.label}>
@@ -171,7 +188,7 @@ export default function AppShell({
             <span className="ribbon-group-label">Align</span>
           </div>
 
-          <div className="ribbon-group">
+          <div className="ribbon-group" aria-hidden="true">
             <div className="ribbon-group-stack">
               <span className="ribbon-icon-btn ribbon-icon-btn--wide">
                 <span className="ribbon-icon ribbon-icon--front" />
@@ -185,7 +202,7 @@ export default function AppShell({
             <span className="ribbon-group-label">Arrange</span>
           </div>
 
-          <div className="ribbon-group">
+          <div className="ribbon-group" aria-hidden="true">
             <div className="ribbon-group-stack">
               <label className="ribbon-field">
                 <span className="ribbon-icon ribbon-icon--height" />
@@ -197,6 +214,20 @@ export default function AppShell({
               </label>
             </div>
             <span className="ribbon-group-label">Size</span>
+          </div>
+
+          <div className="ribbon-group">
+            <button
+              type="button"
+              className="ribbon-cmd"
+              onClick={onEscalate}
+              disabled={escalateDisabled}
+              title="Escalate for visibility on intended positioning (H)"
+            >
+              <FlagIcon />
+              <span className="ribbon-cmd-label">{escalateLabel}</span>
+            </button>
+            <span className="ribbon-group-label">Review</span>
           </div>
         </div>
       </div>

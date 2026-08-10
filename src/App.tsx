@@ -10,7 +10,7 @@ import TaskPanel from './components/TaskPanel'
 import type { ThreadEntry } from './components/TaskPanel'
 import TitleScreen from './components/TitleScreen'
 import Workspace from './components/Workspace'
-import { ambientAt } from './content/notifications'
+import { ambientAt, escalationReply } from './content/notifications'
 import { hasObjective, isShapeComplete } from './game/alignment'
 import { resolveTolerance } from './game/constants'
 import {
@@ -183,17 +183,20 @@ export default function App() {
     if (phase !== 'working' || hintCooling) return
     const ghosts = computeHints(shapes, level)
     if (ghosts.length === 0) return
+    const rung = escalations + 1
     setHints(ghosts)
     setHintLeaving(false)
     setHintToken((n) => n + 1)
-    setEscalations((n) => n + 1)
+    setEscalations(rung)
     setHintCooling(true)
     play('hint')
     later(() => setHintLeaving(true), 1750)
     later(() => setHints([]), 2050)
     later(() => setHintCooling(false), 3400)
-    later(() => pushToast('Escalation logged', 'Thanks for flagging.', 'system'), 1200)
-  }, [phase, hintCooling, shapes, level, play, later, pushToast])
+    // The reply lands while the answer is still on screen.
+    const reply = escalationReply(rung)
+    later(() => pushToast(reply.title, reply.body, reply.tone), 1200)
+  }, [phase, hintCooling, shapes, level, escalations, play, later, pushToast])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -474,6 +477,9 @@ export default function App() {
       debug={DEBUG}
       onToggleMute={game.toggleMute}
       onPause={() => game.setPaused(true)}
+      onEscalate={escalate}
+      escalateLabel={hintCooling ? 'Escalated.' : 'Escalate'}
+      escalateDisabled={phase !== 'working' || hintCooling}
     >
       {DEBUG ? (
         <div className="debugbar">

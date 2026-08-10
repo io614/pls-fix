@@ -23,3 +23,23 @@ export const AMBIENT: AmbientNotification[] = [
 export function ambientAt(index: number): AmbientNotification {
   return AMBIENT[index % AMBIENT.length]
 }
+
+/**
+ * Replies to an escalation. Each one travels a rung further up the organisation
+ * and arrives back where it started. The ladder resets per task, so escalating
+ * always begins politely.
+ */
+export const ESCALATION_REPLIES: AmbientNotification[] = [
+  { title: 'Sarah', body: 'Thanks for flagging.', tone: 'neutral' },
+  { title: 'Sarah', body: 'Looping in Priya.', tone: 'neutral' },
+  { title: 'Priya', body: 'Logged as a risk. Owner: you.', tone: 'system' },
+  { title: 'Marcus', body: '?', tone: 'urgent' },
+  { title: 'Priya', body: 'Escalation closed. No action taken.', tone: 'system' },
+  { title: 'David', body: "Let's socialise this.", tone: 'neutral' },
+]
+
+export function escalationReply(count: number): AmbientNotification {
+  const i = Math.max(1, count) - 1
+  // Past the end of the ladder the organisation simply keeps socialising it.
+  return ESCALATION_REPLIES[Math.min(i, ESCALATION_REPLIES.length - 1)]
+}
