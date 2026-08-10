@@ -79,7 +79,7 @@ export default function App() {
   const [scale, setScale] = useState(1)
   const [hints, setHints] = useState<HintGhost[]>([])
   const [hintToken, setHintToken] = useState(0)
-  const [hintsUsed, setHintsUsed] = useState(0)
+  const [escalations, setEscalations] = useState(0)
   const [hintCooling, setHintCooling] = useState(false)
   const [hintLeaving, setHintLeaving] = useState(false)
   const [fading, setFading] = useState(false)
@@ -131,7 +131,7 @@ export default function App() {
     setHintLeaving(false)
     setHintCooling(false)
     // Each task is judged on its own merits.
-    setHintsUsed(0)
+    setEscalations(0)
     setFading(false)
     firedNotifications.current = new Set()
     ambientIndex.current = 0
@@ -177,22 +177,23 @@ export default function App() {
 
   /**
    * Reveals the solution for a moment. Costs nothing mechanically, but the organisation
-   * does notice: every request nudges the Ownership indicator down.
+   * does notice: the escalation is acknowledged, and Ownership quietly drops.
    */
-  const requestGuidance = useCallback(() => {
+  const escalate = useCallback(() => {
     if (phase !== 'working' || hintCooling) return
     const ghosts = computeHints(shapes, level)
     if (ghosts.length === 0) return
     setHints(ghosts)
     setHintLeaving(false)
     setHintToken((n) => n + 1)
-    setHintsUsed((n) => n + 1)
+    setEscalations((n) => n + 1)
     setHintCooling(true)
     play('hint')
     later(() => setHintLeaving(true), 1750)
     later(() => setHints([]), 2050)
     later(() => setHintCooling(false), 3400)
-  }, [phase, hintCooling, shapes, level, play, later])
+    later(() => pushToast('Escalation logged', 'Thanks for flagging.', 'system'), 1200)
+  }, [phase, hintCooling, shapes, level, play, later, pushToast])
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -201,11 +202,11 @@ export default function App() {
       const el = document.activeElement
       if (el instanceof HTMLSelectElement || el instanceof HTMLInputElement) return
       e.preventDefault()
-      requestGuidance()
+      escalate()
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [requestGuidance])
+  }, [escalate])
 
   const status = useMemo(() => levelStatus(shapes, level), [shapes, level])
 
@@ -391,8 +392,8 @@ export default function App() {
   ])
 
   const kpis = useMemo(
-    () => computeKpis(level.id, status.smooth, elapsed, hintsUsed),
-    [level.id, status.smooth, elapsed, hintsUsed],
+    () => computeKpis(level.id, status.smooth, elapsed, escalations),
+    [level.id, status.smooth, elapsed, escalations],
   )
 
   /* The version history nobody has ever pruned. */
@@ -561,7 +562,7 @@ export default function App() {
         clockUrgent={Boolean(level.countdown) && !meetingDelayed && level.countdown! - elapsed < 60}
         nudgeHint={Boolean(drag.selectedId) && interactive}
         zoom={`${Math.round(scale * 100)}%`}
-        onHint={requestGuidance}
+        onHint={escalate}
         hintDisabled={phase !== 'working' || hintCooling}
         hintLabel={hintCooling ? 'Escalated.' : 'Escalate'}
       />

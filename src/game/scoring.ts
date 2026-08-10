@@ -30,18 +30,15 @@ export function computeKpis(
   levelId: string,
   progress: number,
   elapsedSeconds: number,
-  guidanceRequests = 0,
+  escalations = 0,
 ): Kpi[] {
   const seed = hash(levelId)
   const alignment = Math.round(progress * 100)
   const efficiency = Math.max(12, Math.round(118 - elapsedSeconds * 0.55))
   const satisfaction = Math.round(48 + seed * 40 + progress * 8)
   const delivery = Math.round(96 + seed * 18)
-  // Asking where things go is, of course, an ownership problem.
-  const ownership = Math.max(
-    4,
-    Math.round(31 + hash(levelId + 'own') * 44) - guidanceRequests * 11,
-  )
+  // Escalating a rectangle is, of course, an ownership problem.
+  const ownership = Math.max(4, Math.round(31 + hash(levelId + 'own') * 44) - escalations * 11)
   const synergy = Math.round(4 + hash(levelId + 'syn') * 22)
 
   return [
