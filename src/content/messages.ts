@@ -10,6 +10,11 @@ export const CAST = {
 
 export type CastKey = keyof typeof CAST
 
+/** The role a name carries, if it belongs to a colleague rather than a system. */
+export function castRole(name: string): string | undefined {
+  return Object.values(CAST).find((p) => p.name === name)?.role
+}
+
 /** Two initials on a flat disc — the house style for corporate avatars. */
 export function initials(name: string): string {
   const parts = name.trim().split(/\s+/)

@@ -5,6 +5,7 @@ import NotificationStack from './components/Notification'
 import type { Toast } from './components/Notification'
 import PauseMenu from './components/PauseMenu'
 import PerformanceReview from './components/PerformanceReview'
+import SplashScreen from './components/SplashScreen'
 import StatusBar from './components/StatusBar'
 import TaskPanel from './components/TaskPanel'
 import type { ThreadEntry } from './components/TaskPanel'
@@ -84,6 +85,8 @@ export default function App() {
   const [hintCooling, setHintCooling] = useState(false)
   const [hintLeaving, setHintLeaving] = useState(false)
   const [fading, setFading] = useState(false)
+  /* The launch splash shows once per page load, like the application it imitates. */
+  const [splashDone, setSplashDone] = useState(false)
 
   const timers = useRef<number[]>([])
   const toastId = useRef(0)
@@ -455,6 +458,12 @@ export default function App() {
   const handleReviewFinish = useCallback(() => {
     game.restartCampaign()
   }, [game])
+
+  const dismissSplash = useCallback(() => setSplashDone(true), [])
+
+  if (!splashDone) {
+    return <SplashScreen onDone={dismissSplash} reducedMotion={reducedMotion} />
+  }
 
   if (game.screen === 'title') {
     return (
