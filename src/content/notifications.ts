@@ -36,10 +36,26 @@ export const ESCALATION_REPLIES: AmbientNotification[] = [
   { title: 'Marcus', body: '?', tone: 'urgent' },
   { title: 'Priya', body: 'Escalation closed. No action taken.', tone: 'system' },
   { title: 'David', body: "Let's socialise this.", tone: 'neutral' },
+  { title: 'Alex', body: "It's a few pixels. You've got this.", tone: 'neutral' },
+  { title: 'Sarah', body: 'Out of office. Back Monday.', tone: 'system' },
+  { title: 'Marcus', body: 'Removing myself from this thread.', tone: 'system' },
 ]
 
+/** First reference number issued once the humans have stopped replying. */
+const FIRST_REF = 4471
+
+/**
+ * Once the ladder is exhausted nobody answers personally again. The service desk
+ * takes over and files each escalation under a fresh reference, so the replies
+ * keep arriving and never repeat.
+ */
 export function escalationReply(count: number): AmbientNotification {
   const i = Math.max(1, count) - 1
-  // Past the end of the ladder the organisation simply keeps socialising it.
-  return ESCALATION_REPLIES[Math.min(i, ESCALATION_REPLIES.length - 1)]
+  if (i < ESCALATION_REPLIES.length) return ESCALATION_REPLIES[i]
+  const ref = FIRST_REF + (i - ESCALATION_REPLIES.length)
+  return {
+    title: 'Service Desk',
+    body: `Escalation logged. Ref: ESC-${ref}.`,
+    tone: 'system',
+  }
 }
