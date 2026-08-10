@@ -17,10 +17,10 @@
   --ink-3: #8f959b;
   --ink-4: #b3b8bd;
 
-  --blue: #2f6fd0;
-  --blue-deep: #245ab0;
-  --blue-soft: #eaf1fc;
-  --blue-line: #bcd2f2;
+  --blue: #185abd;
+  --blue-deep: #0f4b8e;
+  --blue-soft: #e8f1fb;
+  --blue-line: #bfd8f2;
   --green: #3d8a5c;
   --green-soft: #e9f2ec;
   --amber: #b8801a;
@@ -31,11 +31,18 @@
   --guide: #d1428f;
   --guide-soft: rgba(209, 66, 143, 0.12);
 
-  --font: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+  /* Ribbon chrome, kept distinct from the workspace palette above. */
+  --office-bg: #f3f2f1;
+  --office-bg-hover: #e8e6e4;
+  --office-bg-pressed: #dfdcda;
+  --office-line: #e1dfdd;
+  --office-accent: #b8d0ec;
+
+  --font: 'Segoe UI', ui-sans-serif, -apple-system, BlinkMacSystemFont, Roboto,
     'Helvetica Neue', Arial, sans-serif;
   --mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
 
-  --radius: 4px;
+  --radius: 2px;
   --shadow-1: 0 1px 2px rgba(29, 32, 35, 0.06);
   --shadow-2: 0 8px 26px rgba(29, 32, 35, 0.1);
   --shadow-3: 0 24px 60px rgba(29, 32, 35, 0.18);
@@ -108,10 +115,14 @@ button {
 }
 
 .titlebar,
-.ribbon,
+.ribbon-wrap,
 .debugbar,
 .statusbar {
   flex: 0 0 auto;
+}
+
+.shell {
+  border-top: 3px solid var(--blue);
 }
 
 .shell.is-debug .titlebar {
@@ -126,6 +137,38 @@ button {
   padding: 0 14px;
   background: var(--paper);
   border-bottom: 1px solid var(--line);
+}
+
+.qat {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex: 0 0 auto;
+}
+
+.qat-btn {
+  width: 15px;
+  height: 15px;
+  border-radius: 2px;
+  background: no-repeat center / 10px 10px;
+  opacity: 0.55;
+}
+
+.qat-btn--save {
+  background: var(--blue);
+  clip-path: polygon(15% 0, 85% 0, 100% 15%, 100% 100%, 0 100%, 0 0);
+}
+
+.qat-btn--undo,
+.qat-btn--redo {
+  border: 1.5px solid var(--ink-3);
+  border-radius: 50%;
+  border-right-color: transparent;
+  border-bottom-color: transparent;
+}
+
+.qat-btn--redo {
+  transform: scaleX(-1);
 }
 
 .titlebar-left,
@@ -262,29 +305,35 @@ button {
 
 /* --------------------------------------------------------------- ribbon */
 
+.ribbon-wrap {
+  flex: 0 0 auto;
+  background: var(--office-bg);
+  border-bottom: 1px solid var(--office-line);
+}
+
 .ribbon {
   display: flex;
   align-items: center;
   gap: 2px;
-  height: 32px;
+  height: 30px;
   padding: 0 10px;
-  background: var(--bg);
-  border-bottom: 1px solid var(--line);
 }
 
 .ribbon-tab {
-  padding: 4px 10px;
-  border-radius: 3px;
+  padding: 6px 11px 5px;
   font-size: 11.5px;
-  color: var(--ink-3);
+  color: var(--ink-2);
   cursor: default;
   user-select: none;
+  border-bottom: 2px solid transparent;
+  transition: background var(--t-fast), color var(--t-fast);
 }
 
 .ribbon-tab.is-active {
   background: var(--paper);
-  color: var(--ink);
-  box-shadow: inset 0 0 0 1px var(--line);
+  color: var(--blue);
+  font-weight: 600;
+  border-bottom-color: var(--blue);
 }
 
 .ribbon-spacer {
@@ -294,6 +343,264 @@ button {
 .ribbon-note {
   font-size: 10.5px;
   color: var(--ink-4);
+}
+
+/* ---------------------------------------------------------- ribbon pane */
+
+.ribbon-pane {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  height: 74px;
+  padding: 6px 10px;
+  background: var(--paper);
+}
+
+.ribbon-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 0 12px;
+  border-right: 1px solid var(--office-line);
+}
+
+.ribbon-group:last-child {
+  border-right: 0;
+}
+
+.ribbon-group-label {
+  font-size: 9.5px;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+.ribbon-group-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  flex: 1;
+  align-items: center;
+}
+
+.ribbon-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 2px;
+  border: 1px solid transparent;
+  transition: background var(--t-fast), border-color var(--t-fast);
+}
+
+.ribbon-icon-btn--wide {
+  width: auto;
+  height: auto;
+  justify-content: flex-start;
+  gap: 6px;
+  padding: 4px 8px;
+  font-size: 10.5px;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.ribbon-group-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  justify-content: center;
+}
+
+.ribbon-field {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 7px;
+  border: 1px solid var(--office-line);
+  border-radius: 2px;
+  background: var(--paper);
+}
+
+.ribbon-field-value {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--ink-2);
+}
+
+/* Icons are drawn with CSS rather than an icon font, matching the app's
+   existing hand-drawn app-mark/kbd glyphs. */
+.ribbon-icon {
+  position: relative;
+  display: block;
+  width: 13px;
+  height: 13px;
+}
+
+.ribbon-icon::before,
+.ribbon-icon::after {
+  content: '';
+  position: absolute;
+  background: var(--ink-2);
+}
+
+.ribbon-icon--left::before,
+.ribbon-icon--right::before,
+.ribbon-icon--top::before,
+.ribbon-icon--bottom::before {
+  background: var(--blue);
+}
+
+.ribbon-icon--left::before {
+  left: 0;
+  top: 0;
+  width: 1.5px;
+  height: 13px;
+}
+.ribbon-icon--left::after {
+  left: 3px;
+  top: 2px;
+  width: 8px;
+  height: 9px;
+  background: var(--ink-4);
+}
+
+.ribbon-icon--center::before {
+  left: 6px;
+  top: 0;
+  width: 1.5px;
+  height: 13px;
+  background: var(--blue);
+}
+.ribbon-icon--center::after {
+  left: 2px;
+  top: 2px;
+  width: 9px;
+  height: 9px;
+  background: var(--ink-4);
+}
+
+.ribbon-icon--right::before {
+  right: 0;
+  top: 0;
+  width: 1.5px;
+  height: 13px;
+}
+.ribbon-icon--right::after {
+  right: 3px;
+  top: 2px;
+  width: 8px;
+  height: 9px;
+  background: var(--ink-4);
+}
+
+.ribbon-icon--top::before {
+  left: 0;
+  top: 0;
+  width: 13px;
+  height: 1.5px;
+}
+.ribbon-icon--top::after {
+  left: 2px;
+  top: 3px;
+  width: 9px;
+  height: 8px;
+  background: var(--ink-4);
+}
+
+.ribbon-icon--middle::before {
+  left: 0;
+  top: 6px;
+  width: 13px;
+  height: 1.5px;
+  background: var(--blue);
+}
+.ribbon-icon--middle::after {
+  left: 2px;
+  top: 2px;
+  width: 9px;
+  height: 9px;
+  background: var(--ink-4);
+}
+
+.ribbon-icon--bottom::before {
+  left: 0;
+  bottom: 0;
+  width: 13px;
+  height: 1.5px;
+}
+.ribbon-icon--bottom::after {
+  left: 2px;
+  bottom: 3px;
+  width: 9px;
+  height: 8px;
+  background: var(--ink-4);
+}
+
+.ribbon-icon--front::before {
+  left: 3px;
+  top: 3px;
+  width: 8px;
+  height: 8px;
+  border: 1.5px solid var(--ink-4);
+  background: transparent;
+}
+.ribbon-icon--front::after {
+  left: 0;
+  top: 0;
+  width: 8px;
+  height: 8px;
+  background: var(--blue);
+}
+
+.ribbon-icon--back::before {
+  left: 0;
+  top: 0;
+  width: 8px;
+  height: 8px;
+  background: var(--blue);
+}
+.ribbon-icon--back::after {
+  left: 3px;
+  top: 3px;
+  width: 8px;
+  height: 8px;
+  border: 1.5px solid var(--ink-4);
+  background: transparent;
+}
+
+.ribbon-icon--height::before {
+  left: 5px;
+  top: 0;
+  width: 1.5px;
+  height: 13px;
+  background: var(--ink-4);
+}
+.ribbon-icon--height::after {
+  left: 2px;
+  top: 0;
+  width: 7px;
+  height: 1.5px;
+  background: var(--ink-4);
+  box-shadow: 0 11.5px 0 var(--ink-4);
+}
+
+.ribbon-icon--width::before {
+  left: 0;
+  top: 5px;
+  width: 13px;
+  height: 1.5px;
+  background: var(--ink-4);
+}
+.ribbon-icon--width::after {
+  left: 0;
+  top: 2px;
+  width: 1.5px;
+  height: 7px;
+  background: var(--ink-4);
+  box-shadow: 11.5px 0 0 var(--ink-4);
 }
 
 .debugbar {
@@ -1896,6 +2203,14 @@ kbd {
   }
 
   .ribbon-tab:nth-child(n + 5) {
+    display: none;
+  }
+
+  .ribbon-pane {
+    display: none;
+  }
+
+  .qat {
     display: none;
   }
 
