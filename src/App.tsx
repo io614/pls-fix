@@ -563,7 +563,7 @@ export default function App() {
         zoom={`${Math.round(scale * 100)}%`}
         onHint={requestGuidance}
         hintDisabled={phase !== 'working' || hintCooling}
-        hintLabel={hintCooling ? 'Guidance requested' : 'Request guidance'}
+        hintLabel={hintCooling ? 'Escalated.' : 'Escalate'}
       />
 
       <NotificationStack toasts={toasts} />

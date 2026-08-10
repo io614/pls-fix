@@ -56,7 +56,7 @@ export default function StatusBar({
         className="status-hint"
         onClick={onHint}
         disabled={hintDisabled}
-        title="Briefly show where everything is supposed to go (H)"
+        title="Escalate for visibility on intended positioning (H)"
       >
         {hintLabel}
       </button>

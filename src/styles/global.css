@@ -383,21 +383,29 @@ button {
 
 /* ---------------------------------------------------------- ribbon pane */
 
+/*
+ * Height is left to the content. A fixed height clipped the group labels and
+ * pushed them off their shared baseline, which is an unfortunate look for the
+ * Align group specifically.
+ */
 .ribbon-pane {
   display: flex;
   align-items: stretch;
   gap: 0;
-  height: 74px;
-  padding: 6px 10px;
+  padding: 7px 10px 5px;
   background: var(--paper);
 }
 
+/*
+ * Two rows — commands, then label. Because every group shares this structure
+ * and the flex parent stretches them to equal height, the labels resolve onto
+ * one baseline regardless of what each group holds.
+ */
 .ribbon-group {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  gap: 4px;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  justify-items: center;
+  gap: 5px;
   padding: 0 12px;
   border-right: 1px solid var(--office-line);
 }
@@ -408,6 +416,7 @@ button {
 
 .ribbon-group-label {
   font-size: 9.5px;
+  line-height: 1.35;
   color: var(--ink-3);
   white-space: nowrap;
 }
@@ -416,8 +425,7 @@ button {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 2px;
-  flex: 1;
-  align-items: center;
+  align-content: center;
 }
 
 .ribbon-icon-btn {
@@ -446,7 +454,6 @@ button {
   display: flex;
   flex-direction: column;
   gap: 3px;
-  flex: 1;
   justify-content: center;
 }
 
@@ -1445,6 +1452,9 @@ button {
 }
 
 .status-hint {
+  /* Wide enough to hold both label states, so escalating does not shift the
+     status bar. A game about alignment should not jitter. */
+  min-width: 78px;
   padding: 2px 9px;
   border: 1px solid var(--line);
   border-radius: 3px;
