@@ -142,33 +142,68 @@ button {
 .qat {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
+  gap: 6px;
   flex: 0 0 auto;
 }
 
 .qat-btn {
-  width: 15px;
-  height: 15px;
-  border-radius: 2px;
-  background: no-repeat center / 10px 10px;
-  opacity: 0.55;
+  position: relative;
+  width: 13px;
+  height: 13px;
+  opacity: 0.6;
 }
 
 .qat-btn--save {
+  border-radius: 1px;
   background: var(--blue);
   clip-path: polygon(15% 0, 85% 0, 100% 15%, 100% 100%, 0 100%, 0 0);
 }
 
-.qat-btn--undo,
-.qat-btn--redo {
-  border: 1.5px solid var(--ink-3);
+/* Undo/redo read as small curved arrows: a 3/4 ring plus a triangular
+   arrowhead at the open end, mirrored for the redo direction. */
+.qat-btn--undo::before,
+.qat-btn--redo::before {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 9px;
+  height: 9px;
+  border: 1.4px solid var(--ink-3);
   border-radius: 50%;
-  border-right-color: transparent;
   border-bottom-color: transparent;
 }
 
-.qat-btn--redo {
-  transform: scaleX(-1);
+.qat-btn--undo::before {
+  border-right-color: transparent;
+  transform: rotate(-45deg);
+}
+
+.qat-btn--redo::before {
+  border-left-color: transparent;
+  transform: rotate(45deg);
+}
+
+.qat-btn--undo::after,
+.qat-btn--redo::after {
+  content: '';
+  position: absolute;
+  top: -1px;
+  width: 0;
+  height: 0;
+  border: 2px solid transparent;
+}
+
+.qat-btn--undo::after {
+  left: -1px;
+  border-right-color: var(--ink-3);
+  transform: rotate(15deg);
+}
+
+.qat-btn--redo::after {
+  right: -1px;
+  border-left-color: var(--ink-3);
+  transform: rotate(-15deg);
 }
 
 .titlebar-left,

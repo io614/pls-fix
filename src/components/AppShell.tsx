@@ -41,12 +41,12 @@ export default function AppShell({
             <span />
             <span />
           </span>
+          <span className="app-name">pls fix</span>
           <span className="qat" aria-hidden="true">
             <span className="qat-btn qat-btn--save" />
             <span className="qat-btn qat-btn--undo" />
             <span className="qat-btn qat-btn--redo" />
           </span>
-          <span className="app-name">pls fix</span>
           <span className="app-divider" aria-hidden="true" />
           <span className="app-file" title={filename}>
             {filename}
