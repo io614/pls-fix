@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { Settings } from '../hooks/useGameState'
 import SettingsPanel from './Settings'
+import AppIcon from './AppIcon'
 
 interface Props {
   hasProgress: boolean
@@ -26,11 +27,7 @@ export default function TitleScreen({
   return (
     <main className="title-screen">
       <div className="title-inner">
-        <div className="title-mark" aria-hidden="true">
-          <span />
-          <span />
-          <span />
-        </div>
+        <AppIcon className="title-mark" />
         <h1 className="title-word">pls fix</h1>
         <p className="title-tagline">A corporate alignment simulator.</p>
 

@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import AppIcon from './AppIcon'
 
 interface Props {
   filename: string
@@ -88,11 +89,7 @@ export default function AppShell({
     <div className={`shell${debug ? ' is-debug' : ''}`}>
       <header className="titlebar">
         <div className="titlebar-left">
-          <span className="app-mark" aria-hidden="true">
-            <span />
-            <span />
-            <span />
-          </span>
+          <AppIcon className="app-mark" />
           <span className="app-name">pls fix</span>
 
           <span className="autosave" aria-hidden="true">
