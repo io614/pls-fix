@@ -1,4 +1,7 @@
 interface Props {
+  /** Which task is on screen, in the position PowerPoint keeps its slide count. */
+  taskLabel: string
+  taskReopened: boolean
   status: string
   note?: string
   satisfied: number
@@ -16,6 +19,8 @@ interface Props {
 }
 
 export default function StatusBar({
+  taskLabel,
+  taskReopened,
   status,
   note,
   satisfied,
@@ -33,6 +38,11 @@ export default function StatusBar({
 }: Props) {
   return (
     <footer className="statusbar">
+      <span className={`status-task${taskReopened ? ' is-reopened' : ''}`}>
+        {taskLabel}
+        {taskReopened ? <span className="status-task-flag">Reopened</span> : null}
+      </span>
+
       <span className="status-dot" aria-hidden="true" />
       <span className="status-text">{status}</span>
       {note ? <span className="status-note">{note}</span> : null}

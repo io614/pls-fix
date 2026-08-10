@@ -817,9 +817,30 @@ button {
 
 .task--current,
 .task--viewing {
+  position: relative;
   background: var(--paper);
   color: var(--ink);
   box-shadow: inset 0 0 0 1px var(--line);
+}
+
+/*
+ * The assignment carries a solid accent, the way a selected row does in Outlook.
+ * It stays on the real task even while a closed one is open for review, so the
+ * two are never confused.
+ */
+.task--current::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  bottom: 3px;
+  left: 0;
+  width: 3px;
+  border-radius: 0 2px 2px 0;
+  background: var(--blue);
+}
+
+.task--current .task-title {
+  font-weight: 650;
 }
 
 /* A reopened task is the one on screen, but it is not the real assignment. */
@@ -1758,6 +1779,34 @@ button {
   color: var(--ink-2);
 }
 
+/* Reads first in the status bar, where PowerPoint keeps "Slide 5 of 10". */
+.status-task {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding-right: 12px;
+  border-right: 1px solid var(--line);
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+.status-task.is-reopened {
+  color: var(--blue);
+}
+
+.status-task-flag {
+  padding: 1px 6px;
+  border-radius: 2px;
+  background: var(--blue-soft);
+  color: var(--blue-deep);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
 .status-dot {
   width: 6px;
   height: 6px;
@@ -2341,10 +2390,28 @@ kbd {
     padding: 12px;
   }
 
+  /*
+   * The narrow status bar keeps only what cannot be read elsewhere: which task
+   * this is, how to escalate, the count, and the clock. The prose status and the
+   * progress track are the first things to go — both restate the count.
+   */
   .status-note,
   .nudge-hint,
-  .status-zoom {
+  .status-zoom,
+  .status-text,
+  .status-dot,
+  .status-progress-track {
     display: none;
+  }
+
+  .statusbar {
+    gap: 8px;
+    padding: 0 10px;
+  }
+
+  .status-task {
+    padding-right: 0;
+    border-right: 0;
   }
 
   .toast-stack {

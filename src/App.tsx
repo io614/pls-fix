@@ -567,6 +567,8 @@ export default function App() {
       </div>
 
       <StatusBar
+        taskLabel={`Task ${game.activeIndex + 1} of ${LEVELS.length}`}
+        taskReopened={reviewing}
         status={statusText}
         note={level.statusNote}
         satisfied={status.satisfied}
