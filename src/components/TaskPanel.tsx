@@ -12,14 +12,26 @@ export interface ThreadEntry {
 }
 
 interface Props {
+  /** Where the campaign actually is. */
   levelIndex: number
+  /** What is on screen — the current task, or a closed one reopened for review. */
+  activeIndex: number
   completedIds: string[]
   thread: ThreadEntry[]
   ctaLabel: string | null
   onCta: () => void
+  onOpenTask: (index: number) => void
 }
 
-export default function TaskPanel({ levelIndex, completedIds, thread, ctaLabel, onCta }: Props) {
+export default function TaskPanel({
+  levelIndex,
+  activeIndex,
+  completedIds,
+  thread,
+  ctaLabel,
+  onCta,
+  onOpenTask,
+}: Props) {
   const threadRef = useRef<HTMLDivElement | null>(null)
 
   /* Keep the latest message in view as replies trickle in. */
@@ -41,18 +53,55 @@ export default function TaskPanel({ levelIndex, completedIds, thread, ctaLabel, 
           {LEVELS.map((lvl, i) => {
             const done = completedIds.includes(lvl.id)
             const current = i === levelIndex
+            const viewing = i === activeIndex
             const state = done ? 'done' : current ? 'current' : 'queued'
-            return (
-              <li key={lvl.id} className={`task task--${state}`}>
+            /* Closed work can be reopened; so can the current task, to come back to it. */
+            const openable = (done || current) && !viewing
+
+            const label = done
+              ? viewing && !current
+                ? 'Reopened'
+                : 'Closed'
+              : current
+                ? 'Open'
+                : lvl.priority === 'overdue'
+                  ? 'Overdue'
+                  : '—'
+
+            const body = (
+              <>
                 <span className="task-index">{String(i + 1).padStart(2, '0')}</span>
-                <span className={`task-dot task-dot--${lvl.priority ?? 'normal'}`} aria-hidden="true" />
+                <span
+                  className={`task-dot task-dot--${lvl.priority ?? 'normal'}`}
+                  aria-hidden="true"
+                />
                 <span className="task-body">
                   <span className="task-title">{lvl.title}</span>
                   <span className="task-brief">{lvl.brief}</span>
                 </span>
-                <span className="task-state">
-                  {done ? 'Closed' : current ? 'Open' : lvl.priority === 'overdue' ? 'Overdue' : '—'}
-                </span>
+                <span className="task-state">{label}</span>
+              </>
+            )
+
+            return (
+              <li key={lvl.id}>
+                {openable ? (
+                  <button
+                    type="button"
+                    className={`task task--${state} task--openable`}
+                    onClick={() => onOpenTask(i)}
+                    title={done ? `Reopen: ${lvl.title}` : `Return to: ${lvl.title}`}
+                  >
+                    {body}
+                  </button>
+                ) : (
+                  <div
+                    className={`task task--${state}${viewing ? ' task--viewing' : ''}`}
+                    aria-current={viewing ? 'step' : undefined}
+                  >
+                    {body}
+                  </div>
+                )}
               </li>
             )
           })}
@@ -62,7 +111,7 @@ export default function TaskPanel({ levelIndex, completedIds, thread, ctaLabel, 
       <div className="sidebar-section sidebar-thread">
         <h2 className="panel-heading">
           Thread
-          <span className="panel-count">Task {String(levelIndex + 1).padStart(2, '0')}</span>
+          <span className="panel-count">Task {String(activeIndex + 1).padStart(2, '0')}</span>
         </h2>
         <div className="thread" ref={threadRef}>
           {thread.map((entry) => (

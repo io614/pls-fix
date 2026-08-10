@@ -56,6 +56,12 @@ export function useGameState() {
   const [paused, setPaused] = useState(false)
   /** Bumped whenever a fresh run begins, so a level restarts even at the same index. */
   const [sessionKey, setSessionKey] = useState(0)
+  /*
+   * A closed task the player has reopened to look at again. Deliberately separate
+   * from levelIndex — revisiting old work must never move the campaign pointer —
+   * and deliberately not persisted, so a refresh returns to the real assignment.
+   */
+  const [reopened, setReopened] = useState<number | null>(null)
 
   useEffect(() => {
     writeSave(save)
@@ -65,6 +71,7 @@ export function useGameState() {
 
   const startWork = useCallback(() => {
     setSave((s) => ({ ...s, levelIndex: 0, completed: [] }))
+    setReopened(null)
     setSessionKey((k) => k + 1)
     setScreen('playing')
   }, [])
@@ -73,8 +80,26 @@ export function useGameState() {
 
   const goToLevel = useCallback((index: number) => {
     setSave((s) => ({ ...s, levelIndex: Math.min(Math.max(index, 0), LEVELS.length - 1) }))
+    setReopened(null)
     setSessionKey((k) => k + 1)
     setScreen('playing')
+  }, [])
+
+  /** Reopen a closed task for another look. Progress is left exactly where it was. */
+  const reopenLevel = useCallback(
+    (index: number) => {
+      const clamped = Math.min(Math.max(index, 0), LEVELS.length - 1)
+      // Reopening the task you are already assigned is just going back to work.
+      setReopened(clamped === save.levelIndex ? null : clamped)
+      setSessionKey((k) => k + 1)
+      setScreen('playing')
+    },
+    [save.levelIndex],
+  )
+
+  const returnToCurrent = useCallback(() => {
+    setReopened(null)
+    setSessionKey((k) => k + 1)
   }, [])
 
   const markComplete = useCallback((levelId: string) => {
@@ -89,12 +114,14 @@ export function useGameState() {
 
   const restartCampaign = useCallback(() => {
     setSave((s) => ({ ...s, levelIndex: 0, completed: [] }))
+    setReopened(null)
     setSessionKey((k) => k + 1)
     setScreen('playing')
   }, [])
 
   const resign = useCallback(() => {
     setPaused(false)
+    setReopened(null)
     setScreen('title')
   }, [])
 
@@ -114,12 +141,17 @@ export function useGameState() {
       sessionKey,
       setPaused,
       levelIndex: save.levelIndex,
+      /** The task actually on screen, which may be a reopened one. */
+      activeIndex: reopened ?? save.levelIndex,
+      reopened,
       completed: save.completed,
       settings: save.settings,
       hasProgress,
       startWork,
       continueWork,
       goToLevel,
+      reopenLevel,
+      returnToCurrent,
       markComplete,
       advance,
       restartCampaign,
@@ -132,12 +164,15 @@ export function useGameState() {
       paused,
       sessionKey,
       save.levelIndex,
+      reopened,
       save.completed,
       save.settings,
       hasProgress,
       startWork,
       continueWork,
       goToLevel,
+      reopenLevel,
+      returnToCurrent,
       markComplete,
       advance,
       restartCampaign,

@@ -59,7 +59,8 @@ export default function App() {
   const reducedMotion = usePrefersReducedMotion(game.settings.reducedMotion)
   const play = useSound(game.settings.muted)
 
-  const level = levelAt(game.levelIndex)
+  const level = levelAt(game.activeIndex)
+  const reviewing = game.reopened !== null
   const tol = useMemo(() => resolveTolerance(level.tolerance), [level])
   const surfaceRef = useRef<HTMLDivElement | null>(null)
 
@@ -374,7 +375,8 @@ export default function App() {
       }, offset + 700)
     }
 
-    if (level.finale) {
+    // Replaying the finale must not restart the campaign out from under the player.
+    if (level.finale && !reviewing) {
       later(() => setFading(true), 700)
       later(() => game.setScreen('review'), reducedMotion ? 1400 : 2400)
     } else {
@@ -392,6 +394,7 @@ export default function App() {
     pushEntry,
     pushToast,
     reducedMotion,
+    reviewing,
   ])
 
   const kpis = useMemo(
@@ -435,16 +438,19 @@ export default function App() {
           : 'Alignment pending'
 
   const ctaLabel =
-    phase === 'complete' && ctaReady && !level.finale
-      ? game.levelIndex >= LEVELS.length - 1
-        ? 'Close task'
-        : 'Open next task'
+    phase === 'complete' && ctaReady && (!level.finale || reviewing)
+      ? reviewing
+        ? 'Back to current task'
+        : game.levelIndex >= LEVELS.length - 1
+          ? 'Close task'
+          : 'Open next task'
       : null
 
   const handleCta = useCallback(() => {
     play('click')
-    game.advance()
-  }, [game, play])
+    if (reviewing) game.returnToCurrent()
+    else game.advance()
+  }, [game, play, reviewing])
 
   const handleReviewFinish = useCallback(() => {
     game.restartCampaign()
@@ -472,7 +478,9 @@ export default function App() {
     <AppShell
       filename={filename}
       saveState={saveState}
-      taskTitle={`Task ${String(game.levelIndex + 1).padStart(2, '0')} of ${LEVELS.length} · ${level.title}`}
+      taskTitle={`Task ${String(game.activeIndex + 1).padStart(2, '0')} of ${LEVELS.length} · ${level.title}${
+        reviewing ? ' · Reopened' : ''
+      }`}
       muted={game.settings.muted}
       debug={DEBUG}
       onToggleMute={game.toggleMute}
@@ -485,7 +493,7 @@ export default function App() {
         <div className="debugbar">
           <span>debug</span>
           <select
-            value={game.levelIndex}
+            value={game.activeIndex}
             onChange={(e) => game.goToLevel(Number(e.target.value))}
             aria-label="Jump to level"
           >
@@ -510,6 +518,8 @@ export default function App() {
       <div className="workarea">
         <TaskPanel
           levelIndex={game.levelIndex}
+          activeIndex={game.activeIndex}
+          onOpenTask={game.reopenLevel}
           completedIds={game.completed}
           thread={thread}
           ctaLabel={ctaLabel}
