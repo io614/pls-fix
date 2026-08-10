@@ -1,0 +1,68 @@
+import { CAST } from '../content/messages'
+import type { Level } from '../game/types'
+import { C, SUBTITLE, TITLE, decor, panel } from './kit'
+
+export const level01: Level = {
+  id: 'pls-fix',
+  title: 'pls fix',
+  brief: 'Operating model slide',
+  priority: 'urgent',
+  sender: { ...CAST.marcus, time: '08:12' },
+  message: ['pls fix'],
+  filename: 'Operating_Model_v2.pptx',
+  canvas: { width: 960, height: 600, surface: 'slide' },
+  shapes: [
+    decor({
+      id: 'title',
+      kind: 'text',
+      x: 80,
+      y: 64,
+      width: 460,
+      height: 36,
+      content: 'Operating Model',
+      style: TITLE,
+    }),
+    decor({
+      id: 'subtitle',
+      kind: 'text',
+      x: 80,
+      y: 104,
+      width: 460,
+      height: 20,
+      content: 'Current and future state',
+      style: SUBTITLE,
+    }),
+    decor({
+      id: 'arrow',
+      kind: 'arrow',
+      x: 412,
+      y: 290,
+      width: 136,
+      height: 30,
+      style: { color: C.ink3 },
+    }),
+    {
+      id: 'current',
+      kind: 'roundedRectangle',
+      x: 170,
+      y: 250,
+      width: 230,
+      height: 110,
+      content: 'CURRENT STATE',
+      movable: false,
+      style: { ...panel(C.slate, C.line), color: C.ink2, tracking: 0.8 },
+    },
+    {
+      id: 'future',
+      kind: 'roundedRectangle',
+      x: 560,
+      y: 284,
+      width: 230,
+      height: 110,
+      content: 'FUTURE STATE',
+      target: { x: 560, y: 250 },
+      style: { ...panel(), tracking: 0.8 },
+    },
+  ],
+  completion: ['Thanks.'],
+}
