@@ -177,6 +177,62 @@ export default function AppShell({
 
         {/* The pane is scenery except for Review, which is the real control. */}
         <div className="ribbon-pane">
+          <div className="ribbon-group ribbon-group--font" aria-hidden="true">
+            <div className="ribbon-group-stack">
+              <div className="ribbon-row">
+                <span className="ribbon-select ribbon-select--name">
+                  Calibri (Body)
+                  <Caret />
+                </span>
+                <span className="ribbon-select ribbon-select--size">
+                  18
+                  <Caret />
+                </span>
+              </div>
+              <div className="ribbon-row">
+                <span className="ribbon-icon-btn ribbon-type ribbon-type--b">B</span>
+                <span className="ribbon-icon-btn ribbon-type ribbon-type--i">I</span>
+                <span className="ribbon-icon-btn ribbon-type ribbon-type--u">U</span>
+                <span className="ribbon-rule" />
+                <span className="ribbon-icon-btn ribbon-swatch">
+                  A<span className="ribbon-swatch-bar" />
+                </span>
+              </div>
+            </div>
+            <span className="ribbon-group-label">Font</span>
+          </div>
+
+          <div className="ribbon-group ribbon-group--para" aria-hidden="true">
+            <div className="ribbon-group-stack">
+              <div className="ribbon-row">
+                {['bullets', 'numbers', 'outdent', 'indent'].map((k) => (
+                  <span key={k} className="ribbon-icon-btn">
+                    <span className={`ribbon-icon ribbon-icon--${k}`} />
+                  </span>
+                ))}
+              </div>
+              <div className="ribbon-row">
+                {['left', 'center', 'right', 'justify'].map((k) => (
+                  <span key={k} className="ribbon-icon-btn">
+                    <span className={`ribbon-icon ribbon-icon--text-${k}`} />
+                  </span>
+                ))}
+              </div>
+            </div>
+            <span className="ribbon-group-label">Paragraph</span>
+          </div>
+
+          <div className="ribbon-group ribbon-group--draw" aria-hidden="true">
+            <div className="ribbon-gallery">
+              {['rect', 'round', 'circle', 'tri', 'arrow', 'line'].map((k) => (
+                <span key={k} className="ribbon-shape">
+                  <span className={`ribbon-shape-glyph ribbon-shape-glyph--${k}`} />
+                </span>
+              ))}
+            </div>
+            <span className="ribbon-group-label">Drawing</span>
+          </div>
+
           <div className="ribbon-group" aria-hidden="true">
             <div className="ribbon-group-grid">
               {ALIGN_ICONS.map((icon) => (

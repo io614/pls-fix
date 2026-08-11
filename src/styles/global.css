@@ -457,6 +457,145 @@ button {
   justify-content: center;
 }
 
+.ribbon-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+/* ------------------------------------------------- font / paragraph / draw */
+
+.ribbon-select {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  height: 22px;
+  padding: 0 5px 0 7px;
+  border: 1px solid var(--office-line);
+  border-radius: 2px;
+  background: var(--paper);
+  font-size: 10.5px;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.ribbon-select--name {
+  width: 112px;
+}
+
+.ribbon-select--size {
+  width: 46px;
+}
+
+.ribbon-type {
+  width: 22px;
+  height: 22px;
+  font-size: 12px;
+  color: var(--ink-2);
+}
+
+.ribbon-type--b {
+  font-weight: 700;
+}
+.ribbon-type--i {
+  font-style: italic;
+  font-family: Georgia, 'Times New Roman', serif;
+}
+.ribbon-type--u {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.ribbon-rule {
+  width: 1px;
+  height: 15px;
+  margin: 0 3px;
+  background: var(--office-line);
+}
+
+.ribbon-swatch {
+  position: relative;
+  width: 22px;
+  height: 22px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.ribbon-swatch-bar {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: 3px;
+  height: 3px;
+  border-radius: 1px;
+  background: var(--red);
+}
+
+/* A shape gallery, which is the one piece of this ribbon the game is actually about. */
+.ribbon-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  align-content: center;
+  padding: 3px;
+  border: 1px solid var(--office-line);
+  border-radius: 2px;
+  background: var(--paper);
+}
+
+.ribbon-shape {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 21px;
+  border-radius: 2px;
+  transition: background var(--t-fast);
+}
+
+.ribbon-shape-glyph {
+  display: block;
+  width: 12px;
+  height: 11px;
+  border: 1.3px solid var(--ink-3);
+}
+
+.ribbon-shape-glyph--round {
+  border-radius: 3px;
+}
+.ribbon-shape-glyph--circle {
+  border-radius: 50%;
+}
+.ribbon-shape-glyph--tri {
+  border: 0;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 11px solid var(--ink-3);
+}
+.ribbon-shape-glyph--arrow {
+  position: relative;
+  border: 0;
+  height: 1.3px;
+  background: var(--ink-3);
+}
+.ribbon-shape-glyph--arrow::after {
+  content: '';
+  position: absolute;
+  right: -1px;
+  top: -2.6px;
+  border: 3px solid transparent;
+  border-left-color: var(--ink-3);
+}
+.ribbon-shape-glyph--line {
+  border: 0;
+  height: 1.3px;
+  background: var(--ink-3);
+  transform: rotate(-20deg);
+}
+
 .ribbon-field {
   display: flex;
   align-items: center;
@@ -661,6 +800,94 @@ button {
   height: 8px;
   border: 1.5px solid var(--ink-4);
   background: transparent;
+}
+
+/* List and text-alignment glyphs: a marker column plus ruled lines. */
+.ribbon-icon--bullets::before,
+.ribbon-icon--numbers::before {
+  left: 0;
+  top: 1px;
+  width: 3px;
+  height: 3px;
+  background: var(--ink-3);
+  box-shadow: 0 4.5px 0 var(--ink-3), 0 9px 0 var(--ink-3);
+}
+
+.ribbon-icon--numbers::before {
+  width: 2px;
+  height: 2px;
+}
+
+.ribbon-icon--bullets::after,
+.ribbon-icon--numbers::after {
+  left: 6px;
+  top: 1.5px;
+  width: 7px;
+  height: 2px;
+  background: var(--ink-4);
+  box-shadow: 0 4.5px 0 var(--ink-4), 0 9px 0 var(--ink-4);
+}
+
+.ribbon-icon--outdent::before,
+.ribbon-icon--indent::before {
+  left: 0;
+  top: 1px;
+  width: 13px;
+  height: 2px;
+  background: var(--ink-4);
+  box-shadow: 0 9px 0 var(--ink-4);
+}
+
+.ribbon-icon--outdent::after,
+.ribbon-icon--indent::after {
+  left: 4px;
+  top: 5.5px;
+  width: 9px;
+  height: 2px;
+  background: var(--ink-4);
+}
+
+.ribbon-icon--indent::after {
+  left: 4px;
+}
+.ribbon-icon--outdent::after {
+  left: 0;
+}
+
+.ribbon-icon--text-left::before,
+.ribbon-icon--text-center::before,
+.ribbon-icon--text-right::before,
+.ribbon-icon--text-justify::before {
+  left: 0;
+  top: 1px;
+  width: 13px;
+  height: 2px;
+  background: var(--ink-4);
+  box-shadow: 0 4.5px 0 var(--ink-4), 0 9px 0 var(--ink-4);
+}
+
+.ribbon-icon--text-left::after,
+.ribbon-icon--text-center::after,
+.ribbon-icon--text-right::after {
+  top: 5.5px;
+  width: 8px;
+  height: 2px;
+  background: var(--paper);
+}
+
+/* The short line is punched out of the middle rule to set the ragged edge. */
+.ribbon-icon--text-left::after {
+  left: 8px;
+  width: 5px;
+}
+.ribbon-icon--text-center::after {
+  left: 0;
+  width: 3px;
+  box-shadow: 10px 0 0 var(--paper);
+}
+.ribbon-icon--text-right::after {
+  left: 0;
+  width: 5px;
 }
 
 .ribbon-icon--height::before {
@@ -2508,6 +2735,23 @@ body[data-reduced-motion='true'] .splash-fill {
 }
 
 /* ----------------------------------------------------------- responsive */
+
+/*
+ * Ribbon groups drop from the right as room runs out, the way a real one
+ * collapses. Review holds on longest — it is the only group that does anything.
+ */
+@media (max-width: 1320px) {
+  .ribbon-group--font,
+  .ribbon-group--para {
+    display: none;
+  }
+}
+
+@media (max-width: 1060px) {
+  .ribbon-group--draw {
+    display: none;
+  }
+}
 
 @media (max-width: 1180px) {
   .rail {
