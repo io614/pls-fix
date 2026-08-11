@@ -2640,7 +2640,7 @@ kbd {
 
 /* The bar cannot loop, so show it resolved rather than frozen mid-slide. */
 @media (prefers-reduced-motion: reduce) {
-  .splash-fill {
+  body:not([data-reduced-motion='false']) .splash-fill {
     width: 100%;
     transform: none;
   }
@@ -3342,10 +3342,16 @@ body[data-reduced-motion='true'] .splash-fill {
 
 /* ------------------------------------------------------- reduced motion */
 
+/*
+ * The system preference is honoured by default, but Settings offers Full as an
+ * explicit override and that has to actually win — otherwise the control is a
+ * lie and someone who wants the motion cannot get it. Anyone who has not asked
+ * for Full (System, or Reduced) is still covered.
+ */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  body:not([data-reduced-motion='false']) *,
+  body:not([data-reduced-motion='false']) *::before,
+  body:not([data-reduced-motion='false']) *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;

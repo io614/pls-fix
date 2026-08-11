@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import AppShell from './components/AppShell'
 import KPIWidget from './components/KPIWidget'
 import NotificationStack from './components/Notification'
@@ -180,7 +180,9 @@ export default function App() {
     [],
   )
 
-  useEffect(() => {
+  /* Before paint, not after: the splash mounts on the first frame and would
+     otherwise start out suppressed and then jump. */
+  useLayoutEffect(() => {
     document.body.dataset.reducedMotion = reducedMotion ? 'true' : 'false'
   }, [reducedMotion])
 
