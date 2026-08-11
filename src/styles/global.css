@@ -42,6 +42,15 @@
     'Helvetica Neue', Arial, sans-serif;
   --mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
 
+  /*
+   * Four steps carry the interface. They had drifted into eight, at half-pixel
+   * intervals nobody could see but everybody had to maintain.
+   */
+  --fs-micro: 9.5px; /* uppercase section labels, counts */
+  --fs-meta: 10.5px; /* timestamps, secondary meta */
+  --fs-ui: 11px; /* controls, status bar */
+  --fs-body: 12.5px; /* messages and prose */
+
   --radius: 2px;
   --shadow-1: 0 1px 2px rgba(29, 32, 35, 0.06);
   --shadow-2: 0 8px 26px rgba(29, 32, 35, 0.1);
@@ -149,7 +158,7 @@ button {
 }
 
 .autosave-label {
-  font-size: 11px;
+  font-size: var(--fs-ui);
   color: var(--ink-2);
   white-space: nowrap;
 }
@@ -173,7 +182,7 @@ button {
 }
 
 .autosave-state {
-  font-size: 11px;
+  font-size: var(--fs-ui);
   color: var(--ink-2);
 }
 
@@ -267,7 +276,7 @@ button {
 
 .app-file {
   font-family: var(--mono);
-  font-size: 11.5px;
+  font-size: var(--fs-ui);
   color: var(--ink-2);
   white-space: nowrap;
   overflow: hidden;
@@ -276,7 +285,7 @@ button {
 }
 
 .app-save {
-  font-size: 10.5px;
+  font-size: var(--fs-meta);
   color: var(--ink-3);
   white-space: nowrap;
 }
@@ -287,7 +296,7 @@ button {
   border: 1px solid var(--line);
   border-radius: 999px;
   background: var(--bg);
-  font-size: 11px;
+  font-size: var(--fs-ui);
   color: var(--ink-2);
   white-space: nowrap;
 }
@@ -306,7 +315,7 @@ button {
   border: 1.5px solid var(--paper);
   background: var(--bg-sunk);
   color: var(--ink-2);
-  font-size: 9px;
+  font-size: var(--fs-micro);
   font-weight: 650;
   letter-spacing: 0.3px;
 }
@@ -322,7 +331,7 @@ button {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--paper);
-  font-size: 11.5px;
+  font-size: var(--fs-ui);
   color: var(--ink-2);
   cursor: pointer;
   transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast);
@@ -357,7 +366,7 @@ button {
 
 .ribbon-tab {
   padding: 6px 11px 5px;
-  font-size: 11.5px;
+  font-size: var(--fs-ui);
   color: var(--ink-2);
   cursor: default;
   user-select: none;
@@ -377,7 +386,7 @@ button {
 }
 
 .ribbon-note {
-  font-size: 10.5px;
+  font-size: var(--fs-meta);
   color: var(--ink-4);
 }
 
@@ -415,7 +424,7 @@ button {
 }
 
 .ribbon-group-label {
-  font-size: 9.5px;
+  font-size: var(--fs-micro);
   line-height: 1.35;
   color: var(--ink-3);
   white-space: nowrap;
@@ -445,7 +454,7 @@ button {
   justify-content: flex-start;
   gap: 6px;
   padding: 4px 8px;
-  font-size: 10.5px;
+  font-size: var(--fs-meta);
   color: var(--ink-2);
   white-space: nowrap;
 }
@@ -475,7 +484,7 @@ button {
   border: 1px solid var(--office-line);
   border-radius: 2px;
   background: var(--paper);
-  font-size: 10.5px;
+  font-size: var(--fs-meta);
   color: var(--ink-2);
   white-space: nowrap;
 }
@@ -491,7 +500,7 @@ button {
 .ribbon-type {
   width: 22px;
   height: 22px;
-  font-size: 12px;
+  font-size: var(--fs-body);
   color: var(--ink-2);
 }
 
@@ -518,7 +527,7 @@ button {
   position: relative;
   width: 22px;
   height: 22px;
-  font-size: 11px;
+  font-size: var(--fs-ui);
   font-weight: 600;
   color: var(--ink-2);
 }
@@ -608,7 +617,7 @@ button {
 
 .ribbon-field-value {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: var(--fs-meta);
   color: var(--ink-2);
 }
 
@@ -626,7 +635,7 @@ button {
   border: 1px solid transparent;
   border-radius: 2px;
   background: transparent;
-  font-size: 10.5px;
+  font-size: var(--fs-meta);
   color: var(--ink-2);
   cursor: pointer;
   transition: background var(--t-fast), border-color var(--t-fast), color var(--t-fast);
@@ -930,7 +939,7 @@ button {
   background: #2a2b2e;
   color: #e8e8e4;
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: var(--fs-ui);
 }
 
 .debugbar select,
@@ -990,7 +999,7 @@ button {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 10px;
-  font-size: 9.5px;
+  font-size: var(--fs-micro);
   font-weight: 700;
   letter-spacing: 1.3px;
   text-transform: uppercase;
@@ -999,7 +1008,7 @@ button {
 
 .panel-count {
   font-family: var(--mono);
-  font-size: 9.5px;
+  font-size: var(--fs-micro);
   font-weight: 500;
   letter-spacing: 0.4px;
   color: var(--ink-4);
@@ -1095,7 +1104,7 @@ button {
 
 .task-index {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: var(--fs-meta);
   font-variant-numeric: tabular-nums;
   color: var(--ink-4);
   text-align: right;
@@ -1127,7 +1136,7 @@ button {
 }
 
 .task-title {
-  font-size: 12px;
+  font-size: var(--fs-body);
   font-weight: 550;
   white-space: nowrap;
   overflow: hidden;
@@ -1135,7 +1144,7 @@ button {
 }
 
 .task-brief {
-  font-size: 10.5px;
+  font-size: var(--fs-meta);
   color: var(--ink-4);
   white-space: nowrap;
   overflow: hidden;
@@ -1143,7 +1152,7 @@ button {
 }
 
 .task-state {
-  font-size: 9.5px;
+  font-size: var(--fs-micro);
   letter-spacing: 0.4px;
   text-transform: uppercase;
   color: var(--ink-4);
@@ -1176,7 +1185,7 @@ button {
 }
 
 .message-system {
-  font-size: 10.5px;
+  font-size: var(--fs-meta);
   color: var(--ink-3);
   letter-spacing: 0.2px;
   text-align: center;
@@ -1201,7 +1210,7 @@ button {
   border-radius: 50%;
   background: var(--bg-sunk);
   color: var(--ink-2);
-  font-size: 9.5px;
+  font-size: var(--fs-micro);
   font-weight: 700;
   letter-spacing: 0.4px;
 }
@@ -1213,23 +1222,23 @@ button {
 }
 
 .message-name {
-  font-size: 12px;
+  font-size: var(--fs-body);
   font-weight: 650;
 }
 
 .message-role {
-  font-size: 10px;
+  font-size: var(--fs-meta);
   color: var(--ink-3);
 }
 
 .message-time {
   font-family: var(--mono);
-  font-size: 10px;
+  font-size: var(--fs-meta);
   color: var(--ink-4);
 }
 
 .message-body p {
-  font-size: 12.5px;
+  font-size: var(--fs-body);
   color: var(--ink);
   line-height: 1.55;
 }
@@ -1256,7 +1265,7 @@ button {
   border-radius: var(--radius);
   background: var(--blue);
   color: #fff;
-  font-size: 12px;
+  font-size: var(--fs-body);
   font-weight: 600;
   letter-spacing: 0.2px;
   cursor: pointer;
@@ -1283,7 +1292,7 @@ button {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--paper);
-  font-size: 12px;
+  font-size: var(--fs-body);
   color: var(--ink-2);
   cursor: pointer;
   transition: border-color var(--t-fast), color var(--t-fast), background var(--t-fast);
@@ -1392,7 +1401,7 @@ button {
   flex: 0 0 80px;
   display: grid;
   place-items: center;
-  font-size: 9.5px;
+  font-size: var(--fs-micro);
   color: var(--ink-4);
   border-right: 1px solid var(--line-soft);
 }
@@ -1401,7 +1410,7 @@ button {
   position: absolute;
   right: 16px;
   bottom: 12px;
-  font-size: 10px;
+  font-size: var(--fs-meta);
   color: var(--ink-4);
   pointer-events: none;
 }
@@ -1499,7 +1508,7 @@ button {
 }
 
 .shape-block-sub {
-  font-size: 11px;
+  font-size: var(--fs-ui);
   font-weight: 400;
   opacity: 0.72;
   letter-spacing: 0;
@@ -1542,7 +1551,7 @@ button {
 }
 
 .shape-kpi-label {
-  font-size: 9.5px;
+  font-size: var(--fs-micro);
   font-weight: 700;
   letter-spacing: 1.1px;
   text-transform: uppercase;
@@ -1591,12 +1600,12 @@ button {
 }
 
 .shape-card-sub {
-  font-size: 11px;
+  font-size: var(--fs-ui);
   color: var(--ink-3);
 }
 
 .shape-panel-title {
-  font-size: 9.5px;
+  font-size: var(--fs-micro);
   font-weight: 700;
   letter-spacing: 1.1px;
   text-transform: uppercase;
@@ -1642,7 +1651,7 @@ button {
   gap: 8px;
   padding: 7px 0;
   border-top: 1px solid var(--line-soft);
-  font-size: 11.5px;
+  font-size: var(--fs-ui);
   color: var(--ink-2);
 }
 
@@ -1661,7 +1670,7 @@ button {
   left: 0;
   bottom: -14px;
   font-family: var(--mono);
-  font-size: 9px;
+  font-size: var(--fs-micro);
   color: var(--guide);
   pointer-events: none;
   white-space: nowrap;
@@ -1803,7 +1812,7 @@ button {
   border: 1px solid var(--line);
   border-radius: 3px;
   background: var(--paper);
-  font-size: 10.5px;
+  font-size: var(--fs-meta);
   color: var(--ink-2);
   cursor: pointer;
   white-space: nowrap;
@@ -1865,7 +1874,7 @@ button {
   background: var(--guide);
   color: #fff;
   font-family: var(--mono);
-  font-size: 9.5px;
+  font-size: var(--fs-micro);
   line-height: 1.5;
   pointer-events: none;
   z-index: 60;
@@ -1901,7 +1910,7 @@ button {
 }
 
 .kpi-label {
-  font-size: 10.5px;
+  font-size: var(--fs-meta);
   color: var(--ink-2);
 }
 
@@ -1947,7 +1956,7 @@ button {
 .kpi-value {
   grid-area: value;
   font-family: var(--mono);
-  font-size: 10.5px;
+  font-size: var(--fs-meta);
   color: var(--ink);
   font-variant-numeric: tabular-nums;
 }
@@ -1966,7 +1975,7 @@ button {
 }
 
 .kpi-rating-label {
-  font-size: 9.5px;
+  font-size: var(--fs-micro);
   font-weight: 700;
   letter-spacing: 1.1px;
   text-transform: uppercase;
@@ -1974,7 +1983,7 @@ button {
 }
 
 .kpi-rating-value {
-  font-size: 11px;
+  font-size: var(--fs-ui);
   font-weight: 600;
   color: var(--ink);
 }
@@ -1989,7 +1998,7 @@ button {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: 8px;
-  font-size: 10.5px;
+  font-size: var(--fs-meta);
   color: var(--ink-3);
 }
 
@@ -2015,7 +2024,7 @@ button {
   padding: 0 14px;
   background: var(--paper);
   border-top: 1px solid var(--line);
-  font-size: 11px;
+  font-size: var(--fs-ui);
   color: var(--ink-2);
 }
 
@@ -2041,7 +2050,7 @@ button {
   border-radius: 2px;
   background: var(--blue-soft);
   color: var(--blue-deep);
-  font-size: 9.5px;
+  font-size: var(--fs-micro);
   font-weight: 700;
   letter-spacing: 0.5px;
   text-transform: uppercase;
@@ -2079,7 +2088,7 @@ button {
   padding-left: 12px;
   border-left: 1px solid var(--line);
   color: var(--ink-3);
-  font-size: 10.5px;
+  font-size: var(--fs-meta);
   white-space: nowrap;
   animation: message-in var(--t-base) both;
 }
@@ -2095,7 +2104,7 @@ kbd {
   border-radius: 3px;
   background: var(--bg);
   font-family: var(--font);
-  font-size: 9.5px;
+  font-size: var(--fs-micro);
   color: var(--ink-2);
 }
 
@@ -2108,7 +2117,7 @@ kbd {
 
 .status-progress-label {
   font-family: var(--mono);
-  font-size: 10.5px;
+  font-size: var(--fs-meta);
   color: var(--ink-2);
   font-variant-numeric: tabular-nums;
 }
@@ -2131,7 +2140,7 @@ kbd {
 
 .status-zoom {
   font-family: var(--mono);
-  font-size: 10.5px;
+  font-size: var(--fs-meta);
   color: var(--ink-3);
   min-width: 42px;
   text-align: right;
@@ -2147,7 +2156,7 @@ kbd {
 }
 
 .status-clock-label {
-  font-size: 10px;
+  font-size: var(--fs-meta);
   color: var(--ink-3);
   text-transform: uppercase;
   letter-spacing: 0.6px;
@@ -2206,7 +2215,7 @@ kbd {
   border-radius: 50%;
   background: var(--bg-sunk);
   color: var(--ink-2);
-  font-size: 11px;
+  font-size: var(--fs-ui);
   font-weight: 700;
   letter-spacing: 0.4px;
 }
@@ -2241,7 +2250,7 @@ kbd {
 }
 
 .toast-title {
-  font-size: 12.5px;
+  font-size: var(--fs-body);
   font-weight: 650;
   color: var(--ink);
   white-space: nowrap;
@@ -2250,7 +2259,7 @@ kbd {
 .toast-role {
   flex: 1 1 auto;
   min-width: 0;
-  font-size: 10.5px;
+  font-size: var(--fs-meta);
   color: var(--ink-3);
   white-space: nowrap;
   overflow: hidden;
@@ -2259,13 +2268,13 @@ kbd {
 
 .toast-time {
   flex: 0 0 auto;
-  font-size: 10px;
+  font-size: var(--fs-meta);
   color: var(--ink-4);
 }
 
 .toast-body {
   margin-top: 3px;
-  font-size: 12px;
+  font-size: var(--fs-body);
   line-height: 1.45;
   color: var(--ink-2);
 }
@@ -2308,7 +2317,7 @@ kbd {
 }
 
 .overlay-kicker {
-  font-size: 9.5px;
+  font-size: var(--fs-micro);
   font-weight: 700;
   letter-spacing: 1.4px;
   text-transform: uppercase;
@@ -2334,7 +2343,7 @@ kbd {
 
 .overlay-sub {
   margin-top: 4px;
-  font-size: 12px;
+  font-size: var(--fs-body);
   color: var(--ink-2);
 }
 
@@ -2365,7 +2374,7 @@ kbd {
 }
 
 .settings-label {
-  font-size: 11.5px;
+  font-size: var(--fs-ui);
   color: var(--ink-2);
 }
 
@@ -2381,7 +2390,7 @@ kbd {
   padding: 4px 10px;
   border: 0;
   background: transparent;
-  font-size: 11px;
+  font-size: var(--fs-ui);
   color: var(--ink-3);
   cursor: pointer;
   transition: background var(--t-fast), color var(--t-fast);
@@ -2399,7 +2408,7 @@ kbd {
 
 .settings-note {
   margin-top: 10px;
-  font-size: 10px;
+  font-size: var(--fs-meta);
   color: var(--ink-4);
   line-height: 1.5;
 }
@@ -2449,7 +2458,7 @@ kbd {
 
 .splash-sub {
   margin-top: 8px;
-  font-size: 11px;
+  font-size: var(--fs-ui);
   letter-spacing: 1.6px;
   text-transform: uppercase;
   color: var(--ink-3);
@@ -2486,7 +2495,7 @@ kbd {
 .splash-status {
   margin-top: 14px;
   min-height: 1.4em;
-  font-size: 12.5px;
+  font-size: var(--fs-body);
   color: var(--ink-2);
 }
 
@@ -2495,7 +2504,7 @@ kbd {
   margin-top: 26px;
   padding-top: 14px;
   border-top: 1px solid var(--line-soft);
-  font-size: 10.5px;
+  font-size: var(--fs-meta);
   letter-spacing: 0.3px;
   color: var(--ink-4);
 }
@@ -2552,7 +2561,7 @@ body[data-reduced-motion='true'] .splash-fill {
 
 .title-tagline {
   margin-top: 10px;
-  font-size: 12.5px;
+  font-size: var(--fs-body);
   color: var(--ink-2);
 }
 
@@ -2562,7 +2571,7 @@ body[data-reduced-motion='true'] .splash-fill {
 
 .title-progress {
   margin-top: 16px;
-  font-size: 10.5px;
+  font-size: var(--fs-meta);
   color: var(--ink-3);
 }
 
@@ -2570,7 +2579,7 @@ body[data-reduced-motion='true'] .splash-fill {
   margin-top: 20px;
   padding-top: 14px;
   border-top: 1px solid var(--line-soft);
-  font-size: 9.5px;
+  font-size: var(--fs-micro);
   letter-spacing: 0.4px;
   color: var(--ink-4);
 }
@@ -2600,7 +2609,7 @@ body[data-reduced-motion='true'] .splash-fill {
 }
 
 .review-kicker {
-  font-size: 9.5px;
+  font-size: var(--fs-micro);
   font-weight: 700;
   letter-spacing: 1.5px;
   text-transform: uppercase;
@@ -2624,7 +2633,7 @@ body[data-reduced-motion='true'] .splash-fill {
 }
 
 .review-meta dt {
-  font-size: 9.5px;
+  font-size: var(--fs-micro);
   font-weight: 700;
   letter-spacing: 1.1px;
   text-transform: uppercase;
@@ -2633,7 +2642,7 @@ body[data-reduced-motion='true'] .splash-fill {
 
 .review-meta dd {
   margin-top: 3px;
-  font-size: 12.5px;
+  font-size: var(--fs-body);
   color: var(--ink);
 }
 
@@ -2652,7 +2661,7 @@ body[data-reduced-motion='true'] .splash-fill {
 }
 
 .review-rating-label {
-  font-size: 12.5px;
+  font-size: var(--fs-body);
   color: var(--ink-2);
 }
 
@@ -2662,7 +2671,7 @@ body[data-reduced-motion='true'] .splash-fill {
 }
 
 .review-rating-value {
-  font-size: 12.5px;
+  font-size: var(--fs-body);
   font-weight: 600;
 }
 
@@ -2673,7 +2682,7 @@ body[data-reduced-motion='true'] .splash-fill {
 }
 
 .review-feedback h2 {
-  font-size: 9.5px;
+  font-size: var(--fs-micro);
   font-weight: 700;
   letter-spacing: 1.1px;
   text-transform: uppercase;
@@ -2682,7 +2691,7 @@ body[data-reduced-motion='true'] .splash-fill {
 }
 
 .review-feedback p {
-  font-size: 12.5px;
+  font-size: var(--fs-body);
   color: var(--ink);
   line-height: 1.65;
 }
@@ -2700,7 +2709,7 @@ body[data-reduced-motion='true'] .splash-fill {
 }
 
 .review-award-title {
-  font-size: 10px;
+  font-size: var(--fs-meta);
   font-weight: 700;
   letter-spacing: 1.6px;
   text-transform: uppercase;
@@ -2709,7 +2718,7 @@ body[data-reduced-motion='true'] .splash-fill {
 
 .review-award-body {
   margin-top: 4px;
-  font-size: 11.5px;
+  font-size: var(--fs-ui);
   color: var(--ink-3);
 }
 
