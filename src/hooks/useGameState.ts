@@ -13,15 +13,51 @@ export interface Settings {
 }
 
 export interface SaveData {
+  /** Bumped when a stored save needs adjusting rather than discarding. */
+  version?: number
   levelIndex: number
   completed: string[]
   settings: Settings
 }
 
+const SAVE_VERSION = 2
+
+/*
+ * Motion ships on. The animations carry the premise — things arriving out of true
+ * and snapping into line — so following a system preference for reduced motion by
+ * default left some players with a game that never demonstrates what it is about.
+ * Reduced remains available and, once chosen, is never overridden.
+ */
 const DEFAULT_SAVE: SaveData = {
+  version: SAVE_VERSION,
   levelIndex: 0,
   completed: [],
-  settings: { muted: false, reducedMotion: null, showObjectives: true },
+  settings: { muted: false, reducedMotion: false, showObjectives: true },
+}
+
+/** Brings a stored save up to date. Pure, so the migration can be tested on its own. */
+export function normaliseSave(parsed: Partial<SaveData>): SaveData {
+  const levelIndex = Math.min(Math.max(parsed.levelIndex ?? 0, 0), LEVELS.length - 1)
+  const settings = { ...DEFAULT_SAVE.settings, ...parsed.settings }
+
+  /*
+   * Saves written before motion was on by default still carry the old "follow the
+   * system" value, so the new default would never reach anyone already playing.
+   * Move those across once. A save already at the current version is left alone,
+   * which is what keeps a deliberate choice of System from being undone every load.
+   */
+  if ((parsed.version ?? 1) < SAVE_VERSION && settings.reducedMotion === null) {
+    settings.reducedMotion = false
+  }
+
+  return {
+    version: SAVE_VERSION,
+    levelIndex,
+    completed: Array.isArray(parsed.completed)
+      ? parsed.completed.filter((v) => typeof v === 'string')
+      : [],
+    settings,
+  }
 }
 
 function readSave(): SaveData {
@@ -29,13 +65,7 @@ function readSave(): SaveData {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return DEFAULT_SAVE
-    const parsed = JSON.parse(raw) as Partial<SaveData>
-    const levelIndex = Math.min(Math.max(parsed.levelIndex ?? 0, 0), LEVELS.length - 1)
-    return {
-      levelIndex,
-      completed: Array.isArray(parsed.completed) ? parsed.completed.filter((v) => typeof v === 'string') : [],
-      settings: { ...DEFAULT_SAVE.settings, ...parsed.settings },
-    }
+    return normaliseSave(JSON.parse(raw) as Partial<SaveData>)
   } catch {
     return DEFAULT_SAVE
   }
