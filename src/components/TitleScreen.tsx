@@ -27,6 +27,12 @@ export default function TitleScreen({
   return (
     <main className="title-screen">
       <div className="title-inner">
+        {/*
+         * The title arrives slightly out of true and settles, with the same guides
+         * the workspace draws. It is the whole game in about a second.
+         */}
+        <span className="title-guide title-guide--v" aria-hidden="true" />
+
         <AppIcon className="title-mark" />
         <h1 className="title-word">pls fix</h1>
         <p className="title-tagline">A corporate alignment simulator.</p>

@@ -2636,6 +2636,7 @@ body[data-reduced-motion='true'] .splash-fill {
 }
 
 .title-inner {
+  position: relative;
   width: min(380px, 100%);
   padding: 34px 32px 26px;
   background: var(--paper);
@@ -2643,7 +2644,119 @@ body[data-reduced-motion='true'] .splash-fill {
   border-radius: 6px;
   box-shadow: var(--shadow-2);
   text-align: center;
+  overflow: hidden;
   animation: message-in var(--t-slow) both;
+}
+
+/*
+ * The opening: the mark, the wordmark and the line beneath it come in from
+ * different places, settle onto a shared centre, and the guides flash once as
+ * they land — the same magenta the workspace uses when something lines up.
+ * Nobody has to be told what the game is about after watching this.
+ */
+.title-mark {
+  animation: title-settle 420ms cubic-bezier(0.2, 0, 0.2, 1) both;
+}
+
+.title-word {
+  animation: title-align-left 460ms cubic-bezier(0.2, 0, 0.2, 1) 130ms both;
+}
+
+.title-tagline {
+  animation: title-align-right 460ms cubic-bezier(0.2, 0, 0.2, 1) 230ms both;
+}
+
+.title-actions {
+  animation: message-in var(--t-slow) 560ms both;
+}
+
+@keyframes title-settle {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes title-align-left {
+  from {
+    opacity: 0;
+    transform: translateX(-22px);
+  }
+  60% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes title-align-right {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  60% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.title-guide {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0;
+}
+
+/* Fires as the wordmark lands on the centre line. */
+.title-guide--v {
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  border-left: 1px dashed var(--guide);
+  animation: guide-flash 620ms ease-out 520ms both;
+}
+
+/*
+ * Anchored to the line it belongs to rather than a measured offset, so it stays
+ * correct when the card grows a third button or the text wraps. The negative
+ * insets match the card's horizontal padding.
+ */
+.title-tagline {
+  position: relative;
+}
+
+.title-tagline::after {
+  content: '';
+  position: absolute;
+  left: -32px;
+  right: -32px;
+  bottom: -9px;
+  border-top: 1px dashed var(--guide);
+  opacity: 0;
+  animation: guide-flash 620ms ease-out 620ms both;
+}
+
+@keyframes guide-flash {
+  0% {
+    opacity: 0;
+  }
+  22% {
+    opacity: 0.85;
+  }
+  70% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 .title-mark {
