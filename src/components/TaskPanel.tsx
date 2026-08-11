@@ -1,26 +1,26 @@
-import { useEffect, useRef } from 'react'
-import { initials } from '../content/messages'
-import { LEVELS } from '../levels'
+import { useEffect, useRef, useState } from "react";
+import { initials } from "../content/messages";
+import { LEVELS } from "../levels";
 
 export interface ThreadEntry {
-  key: string
-  name: string
-  role?: string
-  time: string
-  lines: string[]
-  tone?: 'incoming' | 'system'
+  key: string;
+  name: string;
+  role?: string;
+  time: string;
+  lines: string[];
+  tone?: "incoming" | "system";
 }
 
 interface Props {
   /** Where the campaign actually is. */
-  levelIndex: number
+  levelIndex: number;
   /** What is on screen — the current task, or a closed one reopened for review. */
-  activeIndex: number
-  completedIds: string[]
-  thread: ThreadEntry[]
-  ctaLabel: string | null
-  onCta: () => void
-  onOpenTask: (index: number) => void
+  activeIndex: number;
+  completedIds: string[];
+  thread: ThreadEntry[];
+  ctaLabel: string | null;
+  onCta: () => void;
+  onOpenTask: (index: number) => void;
 }
 
 export default function TaskPanel({
@@ -32,124 +32,160 @@ export default function TaskPanel({
   onCta,
   onOpenTask,
 }: Props) {
-  const threadRef = useRef<HTMLDivElement | null>(null)
+  const threadRef = useRef<HTMLDivElement | null>(null);
+  /*
+   * Narrow screens collapse this panel to a single line so the workspace stays the
+   * dominant thing on the page. It opens over the canvas rather than pushing it, so
+   * the composition never rescales underfoot.
+   */
+  const [open, setOpen] = useState(false);
+  const latest = thread[thread.length - 1];
+
+  /* Never let the collapsed panel hide the way forward. */
+  useEffect(() => {
+    if (ctaLabel) setOpen(true);
+  }, [ctaLabel]);
 
   /* Keep the latest message in view as replies trickle in. */
   useEffect(() => {
-    const el = threadRef.current
-    if (el) el.scrollTop = el.scrollHeight
-  }, [thread.length])
+    const el = threadRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [thread.length]);
 
   return (
-    <aside className="sidebar" aria-label="Tasks and messages">
-      <div className="sidebar-section">
-        <h2 className="panel-heading">
-          Tasks
-          <span className="panel-count">
-            {completedIds.length}/{LEVELS.length}
-          </span>
-        </h2>
-        <ol className="task-list">
-          {LEVELS.map((lvl, i) => {
-            const done = completedIds.includes(lvl.id)
-            const current = i === levelIndex
-            const viewing = i === activeIndex
-            const state = done ? 'done' : current ? 'current' : 'queued'
-            /* Closed work can be reopened; so can the current task, to come back to it. */
-            const openable = (done || current) && !viewing
+    <aside
+      className={`sidebar${open ? " is-open" : ""}`}
+      aria-label="Tasks and messages"
+    >
+      <button
+        type="button"
+        className="sheet-toggle"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+      >
+        <span className="sheet-toggle-who">{latest?.name ?? "Thread"}</span>
+        <span className="sheet-toggle-line">{latest?.lines[0] ?? ""}</span>
+        <span className="sheet-toggle-caret" aria-hidden="true" />
+      </button>
 
-            const label = done
-              ? viewing && !current
-                ? 'Reopened'
-                : 'Closed'
-              : current
-                ? 'Open'
-                : lvl.priority === 'overdue'
-                  ? 'Overdue'
-                  : '—'
+      <div className="sheet-body">
+        <div className="sidebar-section">
+          <h2 className="panel-heading">
+            Tasks
+            <span className="panel-count">
+              {completedIds.length}/{LEVELS.length}
+            </span>
+          </h2>
+          <ol className="task-list">
+            {LEVELS.map((lvl, i) => {
+              const done = completedIds.includes(lvl.id);
+              const current = i === levelIndex;
+              const viewing = i === activeIndex;
+              const state = done ? "done" : current ? "current" : "queued";
+              /* Closed work can be reopened; so can the current task, to come back to it. */
+              const openable = (done || current) && !viewing;
 
-            const body = (
-              <>
-                <span className="task-index">{String(i + 1).padStart(2, '0')}</span>
-                <span
-                  className={`task-dot task-dot--${lvl.priority ?? 'normal'}`}
-                  aria-hidden="true"
-                />
-                <span className="task-body">
-                  <span className="task-title">{lvl.title}</span>
-                  <span className="task-brief">{lvl.brief}</span>
-                </span>
-                <span className="task-state">{label}</span>
-              </>
-            )
+              const label = done
+                ? viewing && !current
+                  ? "Reopened"
+                  : "Closed"
+                : current
+                  ? "Open"
+                  : lvl.priority === "overdue"
+                    ? "Overdue"
+                    : "—";
 
-            return (
-              <li key={lvl.id}>
-                {openable ? (
-                  <button
-                    type="button"
-                    className={`task task--${state} task--openable`}
-                    onClick={() => onOpenTask(i)}
-                    title={done ? `Reopen: ${lvl.title}` : `Return to: ${lvl.title}`}
-                  >
-                    {body}
-                  </button>
-                ) : (
-                  <div
-                    className={`task task--${state}${viewing ? ' task--viewing' : ''}`}
-                    aria-current={viewing ? 'step' : undefined}
-                  >
-                    {body}
-                  </div>
-                )}
-              </li>
-            )
-          })}
-        </ol>
-      </div>
-
-      <div className="sidebar-section sidebar-thread">
-        <h2 className="panel-heading">
-          Thread
-          <span className="panel-count">Task {activeIndex + 1}</span>
-        </h2>
-        <div className="thread" ref={threadRef}>
-          {thread.map((entry) => (
-            <article
-              key={entry.key}
-              className={`message message--${entry.tone ?? 'incoming'}`}
-            >
-              {entry.tone === 'system' ? (
-                <p className="message-system">{entry.lines.join(' ')}</p>
-              ) : (
+              const body = (
                 <>
-                  <header className="message-head">
-                    <span className="avatar" aria-hidden="true">
-                      {initials(entry.name)}
-                    </span>
-                    <span className="message-who">
-                      <span className="message-name">{entry.name}</span>
-                      {entry.role ? <span className="message-role">{entry.role}</span> : null}
-                    </span>
-                    <time className="message-time">{entry.time}</time>
-                  </header>
-                  <div className="message-body">
-                    {entry.lines.map((line, i) => (
-                      <p key={i}>{line}</p>
-                    ))}
-                  </div>
+                  <span className="task-index">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span
+                    className={`task-dot task-dot--${lvl.priority ?? "normal"}`}
+                    aria-hidden="true"
+                  />
+                  <span className="task-body">
+                    <span className="task-title">{lvl.title}</span>
+                    <span className="task-brief">{lvl.brief}</span>
+                  </span>
+                  <span className="task-state">{label}</span>
                 </>
-              )}
-            </article>
-          ))}
+              );
+
+              return (
+                <li key={lvl.id}>
+                  {openable ? (
+                    <button
+                      type="button"
+                      className={`task task--${state} task--openable`}
+                      onClick={() => onOpenTask(i)}
+                      title={
+                        done
+                          ? `Reopen: ${lvl.title}`
+                          : `Return to: ${lvl.title}`
+                      }
+                    >
+                      {body}
+                    </button>
+                  ) : (
+                    <div
+                      className={`task task--${state}${viewing ? " task--viewing" : ""}`}
+                      aria-current={viewing ? "step" : undefined}
+                    >
+                      {body}
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
         </div>
 
-        {ctaLabel ? (
-          <button type="button" className="cta" onClick={onCta}>
-            {ctaLabel}
-          </button>
-        ) : null}
+        <div className="sidebar-section sidebar-thread">
+          <h2 className="panel-heading">
+            Thread
+            <span className="panel-count">Task {activeIndex + 1}</span>
+          </h2>
+          <div className="thread" ref={threadRef}>
+            {thread.map((entry) => (
+              <article
+                key={entry.key}
+                className={`message message--${entry.tone ?? "incoming"}`}
+              >
+                {entry.tone === "system" ? (
+                  <p className="message-system">{entry.lines.join(" ")}</p>
+                ) : (
+                  <>
+                    <header className="message-head">
+                      <span className="avatar" aria-hidden="true">
+                        {initials(entry.name)}
+                      </span>
+                      <span className="message-who">
+                        <span className="message-name">{entry.name}</span>
+                        {entry.role ? (
+                          <span className="message-role">{entry.role}</span>
+                        ) : null}
+                      </span>
+                      <time className="message-time">{entry.time}</time>
+                    </header>
+                    <div className="message-body">
+                      {entry.lines.map((line, i) => (
+                        <p key={i}>{line}</p>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </article>
+            ))}
+          </div>
+
+          {ctaLabel ? (
+            <button type="button" className="cta" onClick={onCta}>
+              {ctaLabel}
+            </button>
+          ) : null}
+        </div>
       </div>
     </aside>
-  )
+  );
 }

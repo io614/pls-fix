@@ -974,6 +974,19 @@ button {
   border-right: 1px solid var(--line);
 }
 
+/*
+ * On desktop this wrapper must not exist as far as layout is concerned — the
+ * sections stay direct flex children of the sidebar. It only becomes a real box
+ * on narrow screens, where it is the collapsible sheet.
+ */
+.sheet-body {
+  display: contents;
+}
+
+.sheet-toggle {
+  display: none;
+}
+
 .sidebar-section {
   padding: 14px 16px;
   border-bottom: 1px solid var(--line-soft);
@@ -1324,8 +1337,21 @@ button {
   background: var(--bg-sunk);
   background-image: radial-gradient(circle at 1px 1px, rgba(29, 32, 35, 0.055) 1px, transparent 0);
   background-size: 22px 22px;
-  overflow: hidden;
+  /*
+   * Scrolls once magnification pushes the stage past the frame, which is how a
+   * zoomed-in phone reaches the far side of a slide. Shapes set touch-action:none
+   * on themselves, so dragging one never turns into a scroll.
+   */
+  overflow: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-x pan-y pinch-zoom;
   transition: opacity var(--t-slow);
+}
+
+/* Keep the stage centred when it is smaller than the frame, but never clip it
+   once it is larger — auto margins do both, place-items alone does not. */
+.workspace > .workspace-stage {
+  margin: auto;
 }
 
 .workspace.is-fading {
@@ -1433,6 +1459,21 @@ button {
 
 .shape.is-interactive.is-movable {
   cursor: grab;
+}
+
+/*
+ * Some elements are genuinely small — rules, thin footers — and stay small even at
+ * full magnification. On a finger-driven pointer they get an invisible margin so
+ * they can be picked up without being enlarged for everybody else. Kept modest so
+ * neighbouring shapes on the denser boards do not start stealing each other's taps.
+ */
+@media (pointer: coarse) {
+  .shape.is-interactive.is-movable::before {
+    content: '';
+    position: absolute;
+    inset: -9px;
+    border-radius: inherit;
+  }
 }
 
 .shape.is-interactive.is-movable:hover {
@@ -2138,12 +2179,72 @@ kbd {
   transition: width var(--t-base);
 }
 
+.status-zoomer {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  flex: 0 0 auto;
+}
+
 .status-zoom {
   font-family: var(--mono);
   font-size: var(--fs-meta);
   color: var(--ink-3);
   min-width: 42px;
-  text-align: right;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.zoom-step {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition: background var(--t-fast), border-color var(--t-fast);
+}
+
+.zoom-step:hover:not(:disabled) {
+  background: var(--office-bg-hover);
+  border-color: var(--office-line);
+}
+
+.zoom-step:disabled {
+  color: var(--ink-4);
+  cursor: default;
+}
+
+/* A plus and a minus, built from the same bar so they always agree. */
+.zoom-glyph {
+  position: relative;
+  display: block;
+  width: 11px;
+  height: 11px;
+}
+
+.zoom-glyph::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 5px;
+  width: 11px;
+  height: 1.6px;
+  background: currentColor;
+}
+
+.zoom-glyph--in::after {
+  content: '';
+  position: absolute;
+  left: 4.7px;
+  top: 0;
+  width: 1.6px;
+  height: 11px;
+  background: currentColor;
 }
 
 .status-clock {
@@ -2777,31 +2878,142 @@ body[data-reduced-motion='true'] .splash-fill {
     grid-template-rows: auto minmax(0, 1fr);
   }
 
+  /*
+   * The panel collapses to one line. Its contents open over the workspace instead
+   * of pushing it down, so the canvas keeps its size and never rescales as the
+   * sheet is opened and closed.
+   */
   .sidebar {
+    position: relative;
     border-right: 0;
     border-bottom: 1px solid var(--line);
-    max-height: 34vh;
+    max-height: none;
+    overflow: visible;
   }
 
-  .sidebar-section:not(.sidebar-thread) {
+  .sheet-toggle {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 8px;
+    width: 100%;
+    min-height: 42px;
+    padding: 10px 14px;
+    border: 0;
+    background: var(--bg-rail);
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .sheet-toggle-who {
+    font-size: var(--fs-ui);
+    font-weight: 650;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  .sheet-toggle-line {
+    font-size: var(--fs-ui);
+    color: var(--ink-3);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sheet-toggle-caret {
+    position: relative;
+    top: -2px;
+    width: 9px;
+    height: 9px;
+    border-right: 1.6px solid var(--ink-3);
+    border-bottom: 1.6px solid var(--ink-3);
+    transform: rotate(45deg);
+    transition: transform var(--t-base);
+  }
+
+  .sidebar.is-open .sheet-toggle-caret {
+    transform: rotate(-135deg);
+    top: 2px;
+  }
+
+  /* Tasks and thread travel together as one scrollable sheet. */
+  .sheet-body {
     display: none;
   }
 
-  .sidebar-thread {
-    padding: 12px 14px;
+  .sidebar.is-open .sheet-body {
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    /* Above the floating zoom control, which would otherwise show through it. */
+    z-index: 220;
+    max-height: 62vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: var(--bg-rail);
+    border-bottom: 1px solid var(--line);
+    box-shadow: var(--shadow-2);
+    animation: sheet-in var(--t-base) both;
+  }
+
+  .sidebar.is-open .sidebar-thread {
+    min-height: 0;
   }
 
   .thread {
-    max-height: 22vh;
+    max-height: none;
   }
 
+  @keyframes sheet-in {
+    from {
+      opacity: 0;
+      transform: translateY(-6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /*
+   * The title bar carried the whole desktop set onto a 390px screen: the name
+   * wrapped to two lines and the save state ran underneath the buttons. It keeps
+   * the mark, the wordmark and the filename, and nothing else.
+   */
   .titlebar-center,
-  .presence {
+  .presence,
+  .autosave,
+  .app-save,
+  .app-divider {
     display: none;
   }
 
+  .titlebar {
+    gap: 8px;
+    padding: 0 10px;
+  }
+
+  .titlebar-left {
+    gap: 8px;
+    overflow: hidden;
+  }
+
+  .app-name {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
   .app-file {
-    max-width: 20ch;
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .titlebar-right {
+    flex: 0 0 auto;
+    gap: 6px;
   }
 
   .ribbon-tab:nth-child(n + 5) {
@@ -2827,11 +3039,59 @@ body[data-reduced-motion='true'] .splash-fill {
    */
   .status-note,
   .nudge-hint,
-  .status-zoom,
   .status-text,
   .status-dot,
   .status-progress-track {
     display: none;
+  }
+
+  /*
+   * Magnification matters most on the smallest screen and the status bar has no
+   * room left, so it lifts out into a floating control over the canvas — thumb
+   * reachable, and clear of the notifications.
+   */
+  .status-zoomer {
+    position: fixed;
+    right: 10px;
+    bottom: 96px;
+    z-index: 210;
+    flex-direction: column-reverse;
+    gap: 0;
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    box-shadow: var(--shadow-2);
+    overflow: hidden;
+  }
+
+  .status-zoomer .status-zoom {
+    display: none;
+  }
+
+  .zoom-step {
+    width: 42px;
+    height: 42px;
+    border-radius: 0;
+  }
+
+  .zoom-step + .zoom-step,
+  .status-zoom + .zoom-step {
+    border-top: 1px solid var(--line-soft);
+  }
+
+  .zoom-glyph {
+    width: 15px;
+    height: 15px;
+  }
+
+  .zoom-glyph::before {
+    top: 6.7px;
+    width: 15px;
+  }
+
+  .zoom-glyph--in::after {
+    left: 6.7px;
+    height: 15px;
   }
 
   .statusbar {
@@ -2855,6 +3115,55 @@ body[data-reduced-motion='true'] .splash-fill {
   .shape-rotate {
     width: 14px;
     height: 14px;
+  }
+}
+
+/*
+ * A short viewport is nearly always a phone held sideways, where the chrome was
+ * taking 43% of the height and leaving the canvas smaller than in portrait. The
+ * ribbon is scenery here and Escalate lives in the status bar at this width, so
+ * the whole strip goes and everything else tightens.
+ */
+@media (max-height: 480px) and (max-width: 940px) {
+  .ribbon-wrap {
+    display: none;
+  }
+
+  .titlebar {
+    height: 36px;
+  }
+
+  .statusbar {
+    height: 26px;
+  }
+
+  .sheet-toggle {
+    min-height: 34px;
+    padding: 7px 12px;
+  }
+
+  .workspace {
+    padding: 8px;
+  }
+
+  .status-zoomer {
+    bottom: 62px;
+  }
+}
+
+/* Narrowest phones: the clock keeps its value and loses its caption. */
+@media (max-width: 380px) {
+  .status-clock-label {
+    display: none;
+  }
+
+  .status-clock {
+    padding-left: 8px;
+  }
+
+  .statusbar {
+    gap: 6px;
+    padding: 0 8px;
   }
 }
 

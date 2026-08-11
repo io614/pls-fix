@@ -13,6 +13,10 @@ interface Props {
   clockUrgent: boolean
   nudgeHint: boolean
   zoom: string
+  onZoomIn: () => void
+  onZoomOut: () => void
+  canZoomIn: boolean
+  canZoomOut: boolean
   onHint: () => void
   hintDisabled: boolean
   hintLabel: string
@@ -32,6 +36,10 @@ export default function StatusBar({
   clockUrgent,
   nudgeHint,
   zoom,
+  onZoomIn,
+  onZoomOut,
+  canZoomIn,
+  canZoomOut,
   onHint,
   hintDisabled,
   hintLabel,
@@ -85,7 +93,27 @@ export default function StatusBar({
         </span>
       ) : null}
 
-      <span className="status-zoom">{zoom}</span>
+      <span className="status-zoomer">
+        <button
+          type="button"
+          className="zoom-step"
+          onClick={onZoomOut}
+          disabled={!canZoomOut}
+          aria-label="Zoom out"
+        >
+          <span className="zoom-glyph zoom-glyph--out" aria-hidden="true" />
+        </button>
+        <span className="status-zoom">{zoom}</span>
+        <button
+          type="button"
+          className="zoom-step"
+          onClick={onZoomIn}
+          disabled={!canZoomIn}
+          aria-label="Zoom in"
+        >
+          <span className="zoom-glyph zoom-glyph--in" aria-hidden="true" />
+        </button>
+      </span>
 
       <span className={`status-clock${clockUrgent ? ' is-urgent' : ''}`}>
         <span className="status-clock-label">{clockLabel}</span>

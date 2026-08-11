@@ -31,6 +31,10 @@ import { LEVELS, levelAt } from './levels'
 
 type Phase = 'working' | 'amending' | 'complete'
 
+/* A phone fits a slide at about 0.4, so magnification has to reach a usable size. */
+const ZOOM_MIN = 1
+const ZOOM_MAX = 3
+
 const FALLBACK_FILES: Record<string, string> = {
   slide: 'Deck_v3.pptx',
   doc: 'Summary_v4.docx',
@@ -79,6 +83,8 @@ export default function App() {
   const [meetingDelayed, setMeetingDelayed] = useState(false)
   const [ctaReady, setCtaReady] = useState(false)
   const [scale, setScale] = useState(1)
+  /* Magnification the player controls, on top of fit-to-frame. */
+  const [zoom, setZoom] = useState(1)
   const [hints, setHints] = useState<HintGhost[]>([])
   const [hintToken, setHintToken] = useState(0)
   const [escalations, setEscalations] = useState(0)
@@ -136,6 +142,7 @@ export default function App() {
     setHintCooling(false)
     // Each task is judged on its own merits.
     setEscalations(0)
+    setZoom(1)
     setFading(false)
     firedNotifications.current = new Set()
     ambientIndex.current = 0
@@ -554,6 +561,7 @@ export default function App() {
           onRotatePointerDown={drag.onRotatePointerDown}
           onSelect={drag.setSelectedId}
           onKeyDown={drag.onKeyDown}
+          zoom={zoom}
           onScale={setScale}
         />
 
@@ -587,6 +595,10 @@ export default function App() {
         clockUrgent={Boolean(level.countdown) && !meetingDelayed && level.countdown! - elapsed < 60}
         nudgeHint={Boolean(drag.selectedId) && interactive}
         zoom={`${Math.round(scale * 100)}%`}
+        onZoomIn={() => setZoom((z) => Math.min(+(z + 0.5).toFixed(2), ZOOM_MAX))}
+        onZoomOut={() => setZoom((z) => Math.max(+(z - 0.5).toFixed(2), ZOOM_MIN))}
+        canZoomIn={zoom < ZOOM_MAX}
+        canZoomOut={zoom > ZOOM_MIN}
         onHint={escalate}
         hintDisabled={phase !== 'working' || hintCooling}
         hintLabel={hintCooling ? 'Escalated.' : 'Escalate'}

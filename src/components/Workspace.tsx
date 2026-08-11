@@ -20,6 +20,8 @@ interface Props {
   debug: boolean
   satisfiedIds: Set<string>
   fading: boolean
+  /** Player-controlled magnification on top of the fit-to-frame scale. */
+  zoom: number
   surfaceRef: React.RefObject<HTMLDivElement | null>
   onShapePointerDown: (e: React.PointerEvent, id: string) => void
   onHandlePointerDown: (e: React.PointerEvent, id: string, handle: ResizeHandle) => void
@@ -46,6 +48,7 @@ export default function Workspace({
   debug,
   satisfiedIds,
   fading,
+  zoom,
   surfaceRef,
   onShapePointerDown,
   onHandlePointerDown,
@@ -55,7 +58,14 @@ export default function Workspace({
   onScale,
 }: Props) {
   const frameRef = useRef<HTMLDivElement | null>(null)
-  const [scale, setScale] = useState(1)
+  const [fit, setFit] = useState(1)
+
+  /*
+   * On a narrow screen the canvas is width-bound — a 960px slide on a 390px phone
+   * fits at 0.4, which leaves the smaller shapes too small to hit. The zoom is what
+   * makes those levels playable; the frame scrolls once the stage outgrows it.
+   */
+  const scale = fit * zoom
 
   useLayoutEffect(() => {
     const frame = frameRef.current
@@ -69,15 +79,17 @@ export default function Workspace({
         frame.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom)
       if (width <= 0 || height <= 0) return
       const next = Math.min(width / level.canvas.width, height / level.canvas.height, 1.35)
-      const resolved = next > 0 ? next : 1
-      setScale(resolved)
-      onScale(resolved)
+      setFit(next > 0 ? next : 1)
     }
     measure()
     const ro = new ResizeObserver(measure)
     ro.observe(frame)
     return () => ro.disconnect()
-  }, [level.canvas.width, level.canvas.height, onScale])
+  }, [level.canvas.width, level.canvas.height])
+
+  useEffect(() => {
+    onScale(scale)
+  }, [scale, onScale])
 
   // Deselect when the level changes so the nudge hint does not linger.
   useEffect(() => {
