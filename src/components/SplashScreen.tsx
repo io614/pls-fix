@@ -64,7 +64,7 @@ export default function SplashScreen({ onDone, reducedMotion }: Props) {
 
   return (
     <div className="splash" role="status" aria-label="Starting pls fix">
-      <div className="splash-inner">
+      <div className="splash-window">
         <AppIcon className="splash-mark" />
         <h1 className="splash-word">pls fix</h1>
         <p className="splash-sub">Corporate Alignment Suite</p>
@@ -74,9 +74,9 @@ export default function SplashScreen({ onDone, reducedMotion }: Props) {
         </span>
 
         <p className="splash-status">{copy[step]}…</p>
-      </div>
 
-      <p className="splash-footer">Please do not turn off your computer.</p>
+        <p className="splash-footer">Please do not turn off your computer.</p>
+      </div>
     </div>
   )
 }

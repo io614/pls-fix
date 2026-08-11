@@ -487,9 +487,7 @@ export default function App() {
     <AppShell
       filename={filename}
       saveState={saveState}
-      taskTitle={`Task ${String(game.activeIndex + 1).padStart(2, '0')} of ${LEVELS.length} · ${level.title}${
-        reviewing ? ' · Reopened' : ''
-      }`}
+      taskTitle={level.title}
       muted={game.settings.muted}
       debug={DEBUG}
       onToggleMute={game.toggleMute}

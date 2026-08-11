@@ -111,7 +111,7 @@ export default function TaskPanel({
       <div className="sidebar-section sidebar-thread">
         <h2 className="panel-heading">
           Thread
-          <span className="panel-count">Task {String(activeIndex + 1).padStart(2, '0')}</span>
+          <span className="panel-count">Task {activeIndex + 1}</span>
         </h2>
         <div className="thread" ref={threadRef}>
           {thread.map((entry) => (

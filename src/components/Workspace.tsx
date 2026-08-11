@@ -89,7 +89,12 @@ export default function Workspace({
 
   return (
     <div className={`workspace${fading ? ' is-fading' : ''}`} ref={frameRef}>
-      <div className="workspace-stage" style={{ width: cw * scale, height: ch * scale }}>
+      {/* Keyed on the level so each new composition animates in rather than appearing. */}
+      <div
+        key={level.id}
+        className="workspace-stage"
+        style={{ width: cw * scale, height: ch * scale }}
+      >
         <div
           className={`surface surface--${level.canvas.surface}`}
           ref={surfaceRef}
