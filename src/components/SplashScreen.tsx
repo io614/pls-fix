@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { LOADING_COPY } from '../content/messages'
 import AppIcon from './AppIcon'
 
@@ -9,6 +9,8 @@ interface Props {
 
 const STEPS = 3
 const STEP_MS = 720
+/* Long enough to register as a hand-off, short enough not to be a wait. */
+const EXIT_MS = 260
 
 /** A different set of meaningless preparations each launch. */
 function pickCopy(): string[] {
@@ -30,10 +32,28 @@ function pickCopy(): string[] {
 export default function SplashScreen({ onDone, reducedMotion }: Props) {
   const copy = useMemo(pickCopy, [])
   const [step, setStep] = useState(0)
+  const [leaving, setLeaving] = useState(false)
+  const closing = useRef(false)
+
+  /*
+   * Fades itself out before handing over. Without a break the title screen —
+   * same mark, same wordmark, same centred card — simply replaces this one, and
+   * the opening it plays on arrival is invisible against a near-identical image.
+   */
+  const finish = useCallback(() => {
+    if (closing.current) return
+    closing.current = true
+    if (reducedMotion) {
+      onDone()
+      return
+    }
+    setLeaving(true)
+    window.setTimeout(onDone, EXIT_MS)
+  }, [onDone, reducedMotion])
 
   useEffect(() => {
     if (reducedMotion) {
-      const t = window.setTimeout(onDone, 420)
+      const t = window.setTimeout(finish, 420)
       return () => window.clearTimeout(t)
     }
 
@@ -41,7 +61,7 @@ export default function SplashScreen({ onDone, reducedMotion }: Props) {
       setStep((s) => {
         if (s + 1 >= copy.length) {
           window.clearInterval(id)
-          onDone()
+          finish()
           return s
         }
         return s + 1
@@ -49,21 +69,21 @@ export default function SplashScreen({ onDone, reducedMotion }: Props) {
     }, STEP_MS)
 
     return () => window.clearInterval(id)
-  }, [copy.length, onDone, reducedMotion])
+  }, [copy.length, finish, reducedMotion])
 
   /* Nobody should be made to watch this a second time. */
   useEffect(() => {
-    const skip = () => onDone()
+    const skip = () => finish()
     window.addEventListener('pointerdown', skip)
     window.addEventListener('keydown', skip)
     return () => {
       window.removeEventListener('pointerdown', skip)
       window.removeEventListener('keydown', skip)
     }
-  }, [onDone])
+  }, [finish])
 
   return (
-    <div className="splash" role="status" aria-label="Starting pls fix">
+    <div className={`splash${leaving ? ' is-leaving' : ''}`} role="status" aria-label="Starting pls fix">
       <div className="splash-window">
         <AppIcon className="splash-mark" />
         <h1 className="splash-word">pls fix</h1>

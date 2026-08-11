@@ -2529,6 +2529,34 @@ kbd {
   animation: fade-in 160ms both;
 }
 
+/* Clears out of the way so the title screen is seen to arrive, not to have been there. */
+.splash.is-leaving {
+  animation: splash-out 260ms cubic-bezier(0.4, 0, 1, 1) both;
+  pointer-events: none;
+}
+
+@keyframes splash-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.splash.is-leaving .splash-window {
+  animation: splash-window-out 260ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+@keyframes splash-window-out {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(0.96);
+  }
+}
+
 /* A launch window, not a blank page — the splash these applications actually show. */
 .splash-window {
   display: grid;
@@ -2655,57 +2683,80 @@ body[data-reduced-motion='true'] .splash-fill {
  * Nobody has to be told what the game is about after watching this.
  */
 .title-mark {
-  animation: title-settle 420ms cubic-bezier(0.2, 0, 0.2, 1) both;
+  animation: title-settle 460ms cubic-bezier(0.2, 0, 0.2, 1) both;
 }
 
 .title-word {
-  animation: title-align-left 460ms cubic-bezier(0.2, 0, 0.2, 1) 130ms both;
+  animation: title-align-left 620ms cubic-bezier(0.16, 0, 0.2, 1) 150ms both;
 }
 
 .title-tagline {
-  animation: title-align-right 460ms cubic-bezier(0.2, 0, 0.2, 1) 230ms both;
+  animation: title-align-right 620ms cubic-bezier(0.16, 0, 0.2, 1) 300ms both;
 }
 
 .title-actions {
-  animation: message-in var(--t-slow) 560ms both;
+  animation: message-in var(--t-slow) 780ms both;
 }
 
+/* Each element arrives from a different place and pops very slightly as it
+   lands — the same beat as a shape snapping to its target. */
 @keyframes title-settle {
-  from {
+  0% {
     opacity: 0;
-    transform: translateY(-10px) scale(0.94);
+    transform: translate(30px, -12px) scale(0.86);
   }
-  to {
+  72% {
     opacity: 1;
-    transform: none;
+    transform: translate(0, 0) scale(1);
+  }
+  84% {
+    transform: translate(0, 0) scale(1.06);
+  }
+  100% {
+    opacity: 1;
+    transform: translate(0, 0) scale(1);
   }
 }
 
 @keyframes title-align-left {
-  from {
+  0% {
     opacity: 0;
-    transform: translateX(-22px);
+    transform: translateX(-52px);
   }
-  60% {
+  55% {
     opacity: 1;
   }
-  to {
+  72% {
     opacity: 1;
-    transform: none;
+    transform: translateX(0) scale(1);
+  }
+  84% {
+    transform: translateX(0) scale(1.045);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
   }
 }
 
 @keyframes title-align-right {
-  from {
+  0% {
     opacity: 0;
-    transform: translateX(18px);
+    transform: translateX(42px);
   }
-  60% {
+  55% {
     opacity: 1;
   }
-  to {
+  72% {
     opacity: 1;
-    transform: none;
+    transform: translateX(0) scale(1);
+  }
+  84% {
+    transform: translateX(0) scale(1.03);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
   }
 }
 
@@ -2720,8 +2771,8 @@ body[data-reduced-motion='true'] .splash-fill {
   top: 0;
   bottom: 0;
   left: 50%;
-  border-left: 1px dashed var(--guide);
-  animation: guide-flash 620ms ease-out 520ms both;
+  border-left: 1.5px dashed var(--guide);
+  animation: guide-flash 900ms ease-out 560ms both;
 }
 
 /*
@@ -2739,9 +2790,9 @@ body[data-reduced-motion='true'] .splash-fill {
   left: -32px;
   right: -32px;
   bottom: -9px;
-  border-top: 1px dashed var(--guide);
+  border-top: 1.5px dashed var(--guide);
   opacity: 0;
-  animation: guide-flash 620ms ease-out 620ms both;
+  animation: guide-flash 900ms ease-out 700ms both;
 }
 
 @keyframes guide-flash {
