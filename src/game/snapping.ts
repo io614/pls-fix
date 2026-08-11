@@ -154,6 +154,72 @@ function positionCandidates(
   return out
 }
 
+/** How close two edges must sit before they count as the same line. */
+const COINCIDENT = 0.6
+
+/**
+ * Guides for every edge or centre the settled shape now shares with another shape.
+ *
+ * The constraint candidates above only describe where a shape *should* go, so a shape
+ * landing on its own target — the moment the whole game turns on — produced no line at
+ * all. These are the lines a presentation editor draws: whatever you have just lined
+ * up with, shown for as long as you hold it there.
+ */
+function coincidenceGuides(shape: GameShape, x: number, y: number, all: GameShape[]): Guide[] {
+  const w = shape.width
+  const h = shape.height
+  const selfX = [x, x + w / 2, x + w]
+  const selfY = [y, y + h / 2, y + h]
+  const found: Guide[] = []
+
+  for (const other of all) {
+    if (other.id === shape.id) continue
+    const oe = edges(other)
+
+    for (const at of selfX) {
+      for (const ov of [oe.left, oe.centerX, oe.right]) {
+        if (Math.abs(at - ov) > COINCIDENT) continue
+        found.push({
+          kind: 'v',
+          at: ov,
+          from: Math.min(y, oe.top),
+          to: Math.max(y + h, oe.bottom),
+        })
+      }
+    }
+
+    for (const at of selfY) {
+      for (const ov of [oe.top, oe.centerY, oe.bottom]) {
+        if (Math.abs(at - ov) > COINCIDENT) continue
+        found.push({
+          kind: 'h',
+          at: ov,
+          from: Math.min(x, oe.left),
+          to: Math.max(x + w, oe.right),
+        })
+      }
+    }
+  }
+
+  return found
+}
+
+/** One line per coordinate, stretched to cover everything it touches. */
+function mergeGuides(guides: Guide[]): Guide[] {
+  const byLine = new Map<string, Guide>()
+  for (const g of guides) {
+    const key = `${g.kind}:${g.at.toFixed(1)}`
+    const seen = byLine.get(key)
+    if (seen) {
+      seen.from = Math.min(seen.from, g.from)
+      seen.to = Math.max(seen.to, g.to)
+    } else {
+      byLine.set(key, { ...g })
+    }
+  }
+  return [...byLine.values()]
+}
+
 function gapBadges(ids: string[], axis: 'x' | 'y', map: Map<string, GameShape>): GapBadge[] {
   const group = ids.map((id) => map.get(id)).filter((s): s is GameShape => Boolean(s))
   const badges: GapBadge[] = []
@@ -227,6 +293,12 @@ export function snapMove(
     )
     for (const g of spacingGroups) result.gaps.push(...gapBadges(g.ids, g.axis, settled))
   }
+
+  // Whatever the shape ended up lining up with, say so.
+  result.guides = mergeGuides([
+    ...result.guides,
+    ...coincidenceGuides(shape, result.x, result.y, ctx.shapes),
+  ])
 
   return result
 }
