@@ -2682,35 +2682,50 @@ body[data-reduced-motion='true'] .splash-fill {
  * they land — the same magenta the workspace uses when something lines up.
  * Nobody has to be told what the game is about after watching this.
  */
+/*
+ * The opening is the mechanic, not an impression of it. Each element arrives and
+ * comes to rest OUT of alignment, sits there long enough to be read as wrong, and
+ * only then — once the guides are up — snaps onto them, overshooting a touch the
+ * way a dragged shape does. Guides first, movement second: a line that appears
+ * after everything has settled is just decoration.
+ */
 .title-mark {
-  animation: title-settle 460ms cubic-bezier(0.2, 0, 0.2, 1) both;
+  animation: title-snap-mark 1400ms linear both;
 }
 
 .title-word {
-  animation: title-align-left 620ms cubic-bezier(0.16, 0, 0.2, 1) 150ms both;
+  animation: title-snap-left 1400ms linear 80ms both;
 }
 
 .title-tagline {
-  animation: title-align-right 620ms cubic-bezier(0.16, 0, 0.2, 1) 300ms both;
+  animation: title-snap-right 1400ms linear 160ms both;
 }
 
 .title-actions {
-  animation: message-in var(--t-slow) 780ms both;
+  animation: message-in var(--t-slow) 1020ms both;
 }
 
-/* Each element arrives from a different place and pops very slightly as it
-   lands — the same beat as a shape snapping to its target. */
-@keyframes title-settle {
+@keyframes title-snap-mark {
   0% {
     opacity: 0;
-    transform: translate(30px, -12px) scale(0.86);
+    transform: translate(22px, -9px) scale(0.9);
+    animation-timing-function: cubic-bezier(0.2, 0, 0.2, 1);
   }
-  72% {
+  16% {
     opacity: 1;
-    transform: translate(0, 0) scale(1);
+    transform: translate(22px, -9px) scale(1);
   }
-  84% {
-    transform: translate(0, 0) scale(1.06);
+  /* Holding wrong. */
+  44% {
+    transform: translate(22px, -9px) scale(1);
+    animation-timing-function: cubic-bezier(0.3, 0, 0.1, 1);
+  }
+  55% {
+    transform: translate(-3px, 1px) scale(1.07);
+    animation-timing-function: cubic-bezier(0.3, 0, 0.2, 1);
+  }
+  63% {
+    transform: translate(0, 0) scale(1);
   }
   100% {
     opacity: 1;
@@ -2718,20 +2733,26 @@ body[data-reduced-motion='true'] .splash-fill {
   }
 }
 
-@keyframes title-align-left {
+@keyframes title-snap-left {
   0% {
     opacity: 0;
-    transform: translateX(-52px);
+    transform: translateX(-44px);
+    animation-timing-function: cubic-bezier(0.2, 0, 0.2, 1);
+  }
+  16% {
+    opacity: 1;
+    transform: translateX(-44px);
+  }
+  44% {
+    transform: translateX(-44px);
+    animation-timing-function: cubic-bezier(0.3, 0, 0.1, 1);
   }
   55% {
-    opacity: 1;
+    transform: translateX(4px) scale(1.05);
+    animation-timing-function: cubic-bezier(0.3, 0, 0.2, 1);
   }
-  72% {
-    opacity: 1;
+  63% {
     transform: translateX(0) scale(1);
-  }
-  84% {
-    transform: translateX(0) scale(1.045);
   }
   100% {
     opacity: 1;
@@ -2739,20 +2760,26 @@ body[data-reduced-motion='true'] .splash-fill {
   }
 }
 
-@keyframes title-align-right {
+@keyframes title-snap-right {
   0% {
     opacity: 0;
-    transform: translateX(42px);
+    transform: translateX(38px);
+    animation-timing-function: cubic-bezier(0.2, 0, 0.2, 1);
+  }
+  16% {
+    opacity: 1;
+    transform: translateX(38px);
+  }
+  44% {
+    transform: translateX(38px);
+    animation-timing-function: cubic-bezier(0.3, 0, 0.1, 1);
   }
   55% {
-    opacity: 1;
+    transform: translateX(-3px) scale(1.035);
+    animation-timing-function: cubic-bezier(0.3, 0, 0.2, 1);
   }
-  72% {
-    opacity: 1;
+  63% {
     transform: translateX(0) scale(1);
-  }
-  84% {
-    transform: translateX(0) scale(1.03);
   }
   100% {
     opacity: 1;
@@ -2766,13 +2793,13 @@ body[data-reduced-motion='true'] .splash-fill {
   opacity: 0;
 }
 
-/* Fires as the wordmark lands on the centre line. */
+/* Up before anything moves, so there is a line to snap to. */
 .title-guide--v {
   top: 0;
   bottom: 0;
   left: 50%;
   border-left: 1.5px dashed var(--guide);
-  animation: guide-flash 900ms ease-out 560ms both;
+  animation: guide-hold 900ms ease-out 500ms both;
 }
 
 /*
@@ -2792,18 +2819,22 @@ body[data-reduced-motion='true'] .splash-fill {
   bottom: -9px;
   border-top: 1.5px dashed var(--guide);
   opacity: 0;
-  animation: guide-flash 900ms ease-out 700ms both;
+  animation: guide-hold 900ms ease-out 620ms both;
 }
 
-@keyframes guide-flash {
+/*
+ * Snaps on quickly, stays up across the moment the elements land on it, then
+ * withdraws — the life of a smart guide while a shape is being dragged onto it.
+ */
+@keyframes guide-hold {
   0% {
     opacity: 0;
   }
-  22% {
-    opacity: 0.85;
+  12% {
+    opacity: 0.9;
   }
-  70% {
-    opacity: 0.85;
+  62% {
+    opacity: 0.9;
   }
   100% {
     opacity: 0;
